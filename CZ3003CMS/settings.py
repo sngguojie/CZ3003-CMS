@@ -40,6 +40,11 @@ INSTALLED_APPS = (
     'hello',
     'Incident',
     'IncidentSummary'
+<<<<<<< Updated upstream
+=======
+    'IncidentCallReport'
+    'Agency'
+>>>>>>> Stashed changes
 )
 
 MIDDLEWARE_CLASSES = (
