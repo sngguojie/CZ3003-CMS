@@ -39,14 +39,10 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'hello',
     'Incident',
-    'IncidentSummary'
-<<<<<<< Updated upstream
-=======
-    'IncidentCallReport'
+    'IncidentSummary',
+    'IncidentCallReport',
     'Agency'
->>>>>>> Stashed changes
 )
-
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
