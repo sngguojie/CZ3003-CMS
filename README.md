@@ -6,25 +6,65 @@ The root url configured is https://cz3003cms.herokuapp.com/
 
 Heroku server is free to use, but it will go to sleep when there is 30 minutes of inactivity. When the next web request goes to the server, it may need 30 secs to load the first time and it will be at normal speeds during subsequent loads.
 
-## Running Locally
+## Running and Setup
 
-Make sure you have Python [installed properly](http://install.python-guide.org).  Also, install the [Heroku Toolbelt](https://toolbelt.heroku.com/) and [Postgres](https://devcenter.heroku.com/articles/heroku-postgresql#local-setup).
+### Install prerequisites
+
+1. Install [Python and Pip](http://install.python-guide.org)
+
+2. Install [virtualenv](http://docs.python-guide.org/en/latest/dev/virtualenvs/#virtualenvironments-ref)
+
+3. Install the [Heroku Toolbelt](https://toolbelt.heroku.com/)
+
+4. Install [Postgres](https://devcenter.heroku.com/articles/heroku-postgresql#local-setup)
+
+### First time setup
+
+#### Clone the repo
 
 ```sh
 $ git clone https://github.com/sngguojie/CZ3003-CMS.git
 $ cd CZ3003-CMS
+```
 
+#### Create a virtual environment for this repo
+
+```sh
+$ virtualenv venv
+```
+
+#### Install packages in the virtual environment
+
+```sh
+$ source venv/bin/activate
 $ pip install -r requirements.txt
+```
 
+#### Setup database and web application assets
+
+```sh
 $ createdb python_getting_started
 
 $ python manage.py migrate
 $ python manage.py collectstatic
+```
 
+#### Startup the app locally
+
+```sh
 $ heroku local
 ```
 
 Your app should now be running on [localhost:5000](http://localhost:5000/).
+
+### Working on the project
+
+[virtualenv](http://docs.python-guide.org/en/latest/dev/virtualenvs/#virtualenvironments-ref) is used to manage package dependecies within the repo.
+Before working on the project, the virtual environment *MUST* be enabled:
+
+```sh
+$ source venv/bin/activate
+```
 
 ## Deploying to Heroku
 
