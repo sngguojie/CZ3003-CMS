@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from views import *
+from CMSIncident.views import *
 
 urlpatterns = [
     # create
@@ -11,6 +11,6 @@ urlpatterns = [
     # delete
     url(r'^delete/$', delete ,name='delete'),
     # list
-    url(r'^list/$', views.list ,name='list'),
+    url(r'^list/$', CMSIncident.views.list ,name='list'),
     
 ]
