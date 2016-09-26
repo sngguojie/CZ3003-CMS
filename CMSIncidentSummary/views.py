@@ -20,6 +20,7 @@ ID = 'id'
 
 
 # Create your views here.
+@csrf_exempt
 def create(request):
 	response = {}
 	if request.method == 'POST':
@@ -57,7 +58,7 @@ def create(request):
 		response_json = json.dumps(response)
 		return HttpResponse(response_json)	
 	
-
+@csrf_exempt
 def read(request):
 	response = {}
 	if request.method == 'POST':
@@ -92,7 +93,7 @@ def read(request):
 		response_json = json.dumps(response)
 		return HttpResponse(response_json)	
 	
-
+@csrf_exempt
 def update(request):
 	response = {}
 	if request.method == 'POST':
@@ -147,6 +148,7 @@ def update(request):
 		response_json = json.dumps(response)
 		return HttpResponse(response_json)
 
+@csrf_exempt
 def delete(request):
 	response = {}
 	if request.method == 'POST':
