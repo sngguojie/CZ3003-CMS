@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from models import Incident
 import json
+from django.views.decorators.csrf import csrf_exempt
 
 # check if is valid json
 def is_json(json_str):
