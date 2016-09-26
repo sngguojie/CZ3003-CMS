@@ -146,7 +146,55 @@ def update(request):
 		return HttpResponse(response_json)
 
 def delete(request):
-	pass
+	response = {}
+	if request.method == 'POST':
+		data = request.POST.get('data')
+		if not is_json(data):
+			response['error'] = 'Data is not in JSON'
+			response_json = json.dumps(response)
+			return HttpResponse(response_json)	
+		data_object = json.loads(data)
+		
+		has_required_attr = 'id' in data_object
+		if not has_required_attr:
+			response['error'] = 'JSON does not have required attr'
+			response_json = json.dumps(response)
+			return HttpResponse(response_json)	
+		id_requested = data_object['id']
+		requested_incident = Incident.objects.get(id_requested)
+		
+
+		requested_incident.delete()
+
+		response['id'] = id_requested
+		response['success'] = True
+
+		response_json = json.dumps(response)
+		return HttpResponse(response_json)
+
+	else:
+		response['error'] = 'Not a POST request'
+		response_json = json.dumps(response)
+		return HttpResponse(response_json)
 
 def list(request):
-	pass
+	response = {}
+	if request.method == 'POST':
+		
+		incidents_list = Incident.objects.all()
+
+		incidents_dict_list = []
+		for incident in incidents_list:
+			incidents_dict_list.append(incident.__dict__)
+
+
+		response['incidents'] = incidents_dict_list
+		response['success'] = True
+
+		response_json = json.dumps(response)
+		return HttpResponse(response_json)
+
+	else:
+		response['error'] = 'Not a POST request'
+		response_json = json.dumps(response)
+		return HttpResponse(response_json)
