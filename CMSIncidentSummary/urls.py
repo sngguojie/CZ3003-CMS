@@ -1,17 +1,17 @@
 # urls.py
 from django.conf.urls import url
-from CMSIncidentSummary.views import *
+from CMSIncidentSummary import views
 
 urlpatterns = [
     # create
-    url(r'^create/$', create ,name='create'),
+    url(r'^create/$', views.create ,name='create'),
     # read
-    url(r'^read/$', read ,name='read'),
+    url(r'^read/$', views.read ,name='read'),
     # update
-    url(r'^update/$', update ,name='update'),
+    url(r'^update/$', views.update ,name='update'),
     # delete
-    url(r'^delete/$', delete ,name='delete'),
+    url(r'^delete/$', views.delete ,name='delete'),
     # list
-    url(r'^list/$', CMSIncidentSummary.views.list ,name='list'),
+    url(r'^list/$', views.list ,name='list'),
     
 ]
