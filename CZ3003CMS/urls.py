@@ -13,7 +13,7 @@ urlpatterns = [
     url(r'^$', hello.views.index, name='index'),
     url(r'^db', hello.views.db, name='db'),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^Incident/', include('Incident.urls', namespace='CMSIncident')),
-    url(r'^IncidentSummary/', include('IncidentSummary.urls', namespace='CMSIncidentSummary')),
+    url(r'^Incident/', include('CMSIncident.urls', namespace='CMSIncident')),
+    url(r'^IncidentSummary/', include('CMSIncidentSummary.urls', namespace='CMSIncidentSummary')),
 ]
 
