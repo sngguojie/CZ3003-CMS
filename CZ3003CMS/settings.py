@@ -38,8 +38,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'hello',
-    'Incident',
-    'IncidentSummary',
+    'CMSIncident',
+    'CMSIncidentSummary',
     'IncidentCallReport',
     'Agency'
 )
