@@ -1,0 +1,1 @@
+Use view decorators to restrict POST, GET requests instead of if statements for all views
