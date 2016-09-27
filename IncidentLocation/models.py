@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 
 def validate_positive_num(value):
-	if value < 0:
+	if (value < 0):
 		raise ValidationError("Field content of %f is not a positive number" % value)
 
 class IncidentLocation(models.Model):

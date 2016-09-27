@@ -38,7 +38,11 @@ def create(request):
 		coord_long=json_obj[expectedAttr["COORD_LONG"]]
 		)
 
-	new_loc.save()
+	try:
+		new_loc.clean_fields()
+		new_loc.save()
+	except Exception as e:
+		return commonHTTP.makeModelSaveError(new_loc, str(e))
 
 	response = {}
 	response["id"] = new_loc.id

@@ -1,0 +1,98 @@
+{
+	"variables": [],
+	"info": {
+		"name": "ApiTests",
+		"_postman_id": "3333f99a-855c-9635-441c-af22a417e4fb",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "IncidentLocation Create Success",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": "var jsonData = JSON.parse(responseBody);\ntests[\"Successful POST\"] = jsonData.success === true;\ntests[\"Status code is 200\"] = responseCode.code === 200;\ntests[\"Successful POST request\"] = responseCode.code === 201 || responseCode.code === 202;"
+					}
+				}
+			],
+			"request": {
+				"url": "{{url}}/IncidentLocation/create/",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"radius\" : 100,\n\t\"coord_lat\" : 200,\n\t\"coord_long\": 300\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "IncidentLocation Negative Radius",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": "tests[\"Status code is 400\"] = responseCode.code === 400;"
+					}
+				}
+			],
+			"request": {
+				"url": "{{url}}/IncidentLocation/create/",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"radius\" : -1,\n\t\"coord_lat\" : 200,\n\t\"coord_long\": 300\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "IncidentLocation Create Missing Param",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": "tests[\"Status code is 400\"] = responseCode.code === 400;"
+					}
+				}
+			],
+			"request": {
+				"url": "{{url}}/IncidentLocation/create/",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"radius\" : 100,\n\t\"coord_lat\" : 200\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}
