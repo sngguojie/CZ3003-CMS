@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from CMSIncident import views
+from Incident import views
 
 urlpatterns = [
     # create

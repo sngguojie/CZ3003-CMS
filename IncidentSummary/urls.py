@@ -1,6 +1,6 @@
 # urls.py
 from django.conf.urls import url
-from CMSIncidentSummary import views
+from IncidentSummary import views
 
 urlpatterns = [
     # create
