@@ -40,6 +40,8 @@ INSTALLED_APPS = (
     'hello',
     'CMSIncident',
     'CMSIncidentSummary',
+    'IncidentLocation',
+    'IncidentLog',
     'IncidentCallReport',
     'Agency'
 )
