@@ -15,5 +15,7 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^Incident/', include('Incident.urls', namespace='Incident')),
     url(r'^IncidentSummary/', include('IncidentSummary.urls', namespace='IncidentSummary')),
+    url(r'^IncidentLocation/', include('IncidentLocation.urls', namespace='IncidentLocation')),
+
 ]
 

@@ -4,13 +4,11 @@ from models import Incident
 import json
 from django.views.decorators.csrf import csrf_exempt
 
+from common import util
+
 # check if is valid json
 def is_json(json_str):
-	try:
-		json_object = json.loads(myjson)
-	except ValueError, e:
-		return False
-	return True
+	return util.is_json(json_str)
 
 # attributes of Incident
 ACT_TIME = 'activation_time'

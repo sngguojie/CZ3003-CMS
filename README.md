@@ -78,6 +78,27 @@ $ git add -A;git commit -am 'commit message';git push origin master
 To check logs:
 Go to https://addons-sso.heroku.com/apps/8cd10da0-f859-4fff-8d2e-fd3dccacafa9/addons/1e10afdf-b04b-4dff-9ad6-f63279039ccc 
 
+
+## Testing
+
+### Running API Tests
+
+1. Get [Postman](https://www.getpostman.com/)
+
+2. In Postman, import the pre-built environment file `localhost` from the `test/postman` folder. This gives a default `url` variable to run tests with.
+
+3. In Postman, import the test collection `ApiTests` in the same folder.
+
+4. Open the Postman Runner in the application, select `ApiTests` and choose the `localhost` environment.
+
+5. Run the test collection. All tests should pass.
+
+
+### Creating API Tests
+
+Import the test collection in Postman, and either duplicate the existing tests with modifications, or create new tests. Saving is necessary!
+
+
 ## To create a new entity
 ```sh
 $ python manage.py startapp <entity_name>

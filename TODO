@@ -1,0 +1,3 @@
+Use view decorators to restrict POST, GET requests instead of if statements for all views
+response objects should just return 'success' flags, omit 'error'
+Send raw JSON data without 'data' parameter

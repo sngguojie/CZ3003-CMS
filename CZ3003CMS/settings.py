@@ -40,6 +40,8 @@ INSTALLED_APPS = (
     'hello',
     'Incident',
     'IncidentSummary',
+    'IncidentLocation',
+    'IncidentLog',
     'IncidentCallReport',
     'Agency'
 )
@@ -112,6 +114,30 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
+
+# Logging settings
+# Log to file and console
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'debug.log'
+        },
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file', 'console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        }
+    }
+}
 
 
 # Update database configuration with $DATABASE_URL.
