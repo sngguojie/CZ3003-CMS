@@ -3,14 +3,11 @@ from django.views.decorators.csrf import csrf_exempt
 # Create your views here.
 from models import IncidentSummary
 import json
+from common import util
 
 # check if is valid json
 def is_json(json_str):
-	try:
-		json_object = json.loads(myjson)
-	except ValueError, e:
-		return False
-	return True
+	return util.is_json(json_str)
 
 # attributes of IncidentSummary
 DATETIME = 'datetime'
