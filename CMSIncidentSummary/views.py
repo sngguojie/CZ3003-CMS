@@ -181,6 +181,7 @@ def delete(request):
 		response_json = json.dumps(response)
 		return HttpResponse(response_json)
 
+@csrf_exempt
 def list(request):
 	response = {}
 	if request.method == 'POST':
