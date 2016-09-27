@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('IncidentSummary', '0001_initial'),
+        ('CMSIncidentSummary', '0001_initial'),
     ]
 
     operations = [
