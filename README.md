@@ -91,7 +91,7 @@ Go to https://addons-sso.heroku.com/apps/8cd10da0-f859-4fff-8d2e-fd3dccacafa9/ad
 
 4. Open the Postman Runner in the application, select `ApiTests` and choose the `localhost` environment.
 
-5. Run the test collection. All tests should pass.
+5. Start the server locally and Run the test collection. All tests should pass.
 
 
 ### Creating API Tests
@@ -116,3 +116,65 @@ Reference: https://docs.djangoproject.com/en/1.10/topics/http/urls/
 
 
 Once done with the entity, write documentation on what is the URL and the returning JSON format Below:
+
+
+## Development Guidelines
+
+Follow the below guidelines when making changes to the project.
+
+### Making Changes
+
+This repository uses a **Rebase -> Pull** Request workflow. The idea is to ensure that most changes are able to be *fast-forwarded* by other members of the team, and to keep the team updated on the same page. In this way, developers fix their own conflicts.
+
+In the workflow, the `master` branch will always be identical to the `master` of the repository, and all changes will be performed on separate branches to be merged after the Pull Requests have been approved.
+
+Follow the steps below when making changes to the project:
+
+#### 1. Perform changes
+
+Perform your changes on a *separate* branch:
+
+```sh
+$ git checkout -b add-feature
+// Perform changes and Commits
+```
+
+#### 2. Rebase your new branch onto the master branch
+
+To ensure that your work can be fast-forwarded onto the master branch (preventing merge conflicts), [rebase](https://git-scm.com/book/en/v2/Git-Branching-Rebasing) your work on the master branch:
+
+```sh
+$ git checkout master
+$ git pull   // Update master branch
+$ git checkout add-feature
+$ git rebase master   // Rebase your work onto master
+// Fix conflicts here, if any
+```
+
+Read the [git rebase](https://git-scm.com/docs/git-rebase) documentation for more options.
+
+3. Push your newly rebased branch
+
+Push your newly rebased branch to a branch on the repository:
+
+```sh
+$ git push origin add-feature
+```
+
+4. Create a Pull Request
+
+On the repository's page on Github, it should detect your newly created branch and prompt you to create a **Pull Request** for it. 
+Alternatively, manually create a Pull Request with your newly pushed branch as a comparison.
+
+Fill up the Pull Request Description following the template provided. Optionally, assign another developer to review your Pull Request.
+
+5. Wait for Approval
+
+In the workflow, new Pull Requests are only merged in after approval by all developers of the repo (or an assigned developer). Developers are to post their approval under the PR comments sections.
+
+Developers can take the opportunity to review the code and suggest optimal changes.
+
+6. Merge the branch
+
+After approval has been given, the creator of the Pull Request is to Merge the pull request with the **Merge** strategy, close the PR, and delete the branch.
+
