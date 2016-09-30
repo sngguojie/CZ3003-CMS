@@ -153,7 +153,7 @@ $ git rebase master   // Rebase your work onto master
 
 Read the [git rebase](https://git-scm.com/docs/git-rebase) documentation for more options.
 
-3. Push your newly rebased branch
+#### 3. Push your newly rebased branch
 
 Push your newly rebased branch to a branch on the repository:
 
@@ -161,20 +161,20 @@ Push your newly rebased branch to a branch on the repository:
 $ git push origin add-feature
 ```
 
-4. Create a Pull Request
+#### 4. Create a Pull Request
 
 On the repository's page on Github, it should detect your newly created branch and prompt you to create a **Pull Request** for it. 
 Alternatively, manually create a Pull Request with your newly pushed branch as a comparison.
 
 Fill up the Pull Request Description following the template provided. Optionally, assign another developer to review your Pull Request.
 
-5. Wait for Approval
+#### 5. Wait for Approval
 
 In the workflow, new Pull Requests are only merged in after approval by all developers of the repo (or an assigned developer). Developers are to post their approval under the PR comments sections.
 
 Developers can take the opportunity to review the code and suggest optimal changes.
 
-6. Merge the branch
+#### 6. Merge the branch
 
 After approval has been given, the creator of the Pull Request is to Merge the pull request with the **Merge** strategy, close the PR, and delete the branch.
 
