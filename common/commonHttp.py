@@ -10,13 +10,13 @@ class HttpBadRequestException(Exception):
 		return repr(self.reason_phrase)
 
 
-def get_json_from_request(request):
-	if not util.is_json(request.body):
+def get_json(json_str):
+	if not util.is_json(json_str):
 		raise HttpBadRequestException(
 			reason_phrase=make_not_json_request_error()
 			)
 	
-	return json.loads(request.body)
+	return json.loads(json_str)
 
 def check_keys(json_request_obj, req_attrs):
 	has_keys, missing_key = util.check_dict_keys(json_request_obj, req_attrs)

@@ -12,7 +12,7 @@ import json
 expectedAttr = {
 	'RADIUS': "radius",
 	'COORD_LAT': "coord_lat",
-	'COORD_LONG': "coord_long"
+	'COORD_LONG': "coord_long",
 }
 
 logger = logging.getLogger("django")
@@ -21,7 +21,7 @@ logger = logging.getLogger("django")
 @csrf_exempt
 def create(request):
 	try:
-		json_obj = commonHttp.get_json_from_request(request)
+		json_obj = commonHttp.get_json(request.body)
 
 		req_attrs = [
 			expectedAttr["RADIUS"], 
@@ -68,8 +68,40 @@ def read(request, obj_id):
 		return HttpResponseBadRequest(str(e))
 
 @require_POST
-def update(request):
-	pass
+@csrf_exempt
+def update(request, obj_id):
+	try:
+		# Get existing obj
+		existing_loc = IncidentLocation.objects.get(id=obj_id)
+	except IncidentLocation.DoesNotExist as e:
+		return HttpResponseBadRequest(str(e))
+
+	try:
+		# Update existing obj
+		json_obj = commonHttp.get_json(request.body)
+
+		req_attrs = [
+			expectedAttr["RADIUS"],
+			expectedAttr["COORD_LAT"],
+			expectedAttr["COORD_LONG"],
+			]
+
+		commonHttp.check_keys(json_obj, req_attrs)
+
+		existing_loc.radius = json_obj.get(expectedAttr["RADIUS"])
+		existing_loc.coord_lat = json_obj.get(expectedAttr["COORD_LAT"])
+		existing_loc.coord_long = json_obj.get(expectedAttr["COORD_LONG"])
+
+		commonHttp.save_model_obj(existing_loc)
+
+		response = JsonResponse({
+			"success" : True,
+			})
+
+		return response
+
+	except commonHttp.HttpBadRequestException as e:
+		return HttpResponseBadRequest(e.reason_phrase)
 
 @require_POST
 def delete(request):

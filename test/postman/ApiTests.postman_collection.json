@@ -155,6 +155,122 @@
 						"description": ""
 					},
 					"response": []
+				},
+				{
+					"name": "IncidentLocation Update Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Status code is 200\"] = responseCode.code === 200;"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/IncidentLocation/update/{{IncidentLocation_id}}/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"radius\" : 150,\n\t\"coord_lat\" : 250,\n\t\"coord_long\": 350\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "IncidentLocation Read Updated",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Response Radius correct\"] = jsonData.radius === 150;\ntests[\"Response Coord_Lat correct\"] = jsonData.coord_lat === 250;\ntests[\"Response Coord_Long correct\"] = jsonData.coord_long === 350;\ntests[\"Status code is 200\"] = responseCode.code === 200;"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/IncidentLocation/read/{{IncidentLocation_id}}/",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"id\" : {{IncidentLocation_id}}\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "IncidentLocation Update Missing Param",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "tests[\"Status code is 400\"] = responseCode.code === 400;"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/IncidentLocation/update/{{IncidentLocation_id}}/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"radius\" : 150,\n\t\"coord_lat\" : 250,\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "IncidentLocation Update Invalid Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "tests[\"Status code is 400\"] = responseCode.code === 400;"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/IncidentLocation/update/0/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"description": ""
+					},
+					"response": []
 				}
 			]
 		}
