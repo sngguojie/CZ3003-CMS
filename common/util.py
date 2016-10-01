@@ -9,7 +9,7 @@ def is_json(json_str):
 		return False
 	return True
 
-def check_keys(dictionary, keys):
+def check_dict_keys(dictionary, keys):
 	"""Check that dictionary contains all the keys, returns missing key""" 
 	for key in keys:
 		if key not in dictionary.keys():

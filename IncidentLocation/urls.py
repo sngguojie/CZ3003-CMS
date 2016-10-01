@@ -5,7 +5,7 @@ urlpatterns = [
     # create
     url(r'^create/$', views.create ,name='create'),
     # read
-    url(r'^read/$', views.read ,name='read'),
+    url(r'^read/(?P<obj_id>[0-9]+)/$', views.read ,name='read'),
     # update
     url(r'^update/$', views.update ,name='update'),
     # delete
