@@ -9,7 +9,7 @@ urlpatterns = [
     # update
     url(r'^update/(?P<obj_id>[0-9]+)/$', views.update ,name='update'),
     # delete
-    url(r'^delete/$', views.delete ,name='delete'),
+    url(r'^delete/(?P<obj_id>[0-9]+)/$', views.delete ,name='delete'),
     # list
     url(r'^list/$', views.list ,name='list'),
     

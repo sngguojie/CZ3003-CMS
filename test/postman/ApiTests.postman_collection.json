@@ -271,6 +271,93 @@
 						"description": ""
 					},
 					"response": []
+				},
+				{
+					"name": "IncidentLocation Delete Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Status code is 200\"] = responseCode.code === 200;"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/IncidentLocation/delete/{{IncidentLocation_id}}/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "IncidentLocation Read Deleted Object",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "tests[\"Status code is 400\"] = responseCode.code === 400;"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/IncidentLocation/read/{{IncidentLocation_id}}",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"id\" : -1\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "IncidentLocation Delete invalid Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "tests[\"Status code is 400\"] = responseCode.code === 400;"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/IncidentLocation/delete/0/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"description": ""
+					},
+					"response": []
 				}
 			]
 		}

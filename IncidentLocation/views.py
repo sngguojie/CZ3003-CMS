@@ -104,8 +104,20 @@ def update(request, obj_id):
 		return HttpResponseBadRequest(e.reason_phrase)
 
 @require_POST
-def delete(request):
-	pass
+@csrf_exempt
+def delete(request, obj_id):
+	try:
+		# Get existing obj
+		existing_loc = IncidentLocation.objects.get(id=obj_id)
+	except IncidentLocation.DoesNotExist as e:
+		return HttpResponseBadRequest(str(e))
+
+	existing_loc.delete()
+	response = JsonResponse({
+		"success" : True,
+		})
+
+	return response 
 
 @require_GET
 def list(request):
