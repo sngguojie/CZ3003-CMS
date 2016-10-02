@@ -358,6 +358,122 @@
 						"description": ""
 					},
 					"response": []
+				},
+				{
+					"name": "IncidentLocation List Create 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Has property: id\"] = typeof(jsonData.id) === \"number\";\ntests[\"Successful POST\"] = jsonData.success === true;\ntests[\"Status code is 200\"] = responseCode.code === 200;\n\npostman.setGlobalVariable(\"IncidentLocation_list_1\", jsonData.id);"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/IncidentLocation/create/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"radius\" : 1,\n\t\"coord_lat\" : 2,\n\t\"coord_long\": 3\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "IncidentLocation List Create 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Has property: id\"] = typeof(jsonData.id) === \"number\";\ntests[\"Successful POST\"] = jsonData.success === true;\ntests[\"Status code is 200\"] = responseCode.code === 200;\n\npostman.setGlobalVariable(\"IncidentLocation_list_2\", jsonData.id);"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/IncidentLocation/create/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"radius\" : 10,\n\t\"coord_lat\" : 20,\n\t\"coord_long\": 30\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "IncidentLocation List Create 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Has property: id\"] = typeof(jsonData.id) === \"number\";\ntests[\"Successful POST\"] = jsonData.success === true;\ntests[\"Status code is 200\"] = responseCode.code === 200;\n\npostman.setGlobalVariable(\"IncidentLocation_list_3\", jsonData.id);"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/IncidentLocation/create/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"radius\" : 100,\n\t\"coord_lat\" : 200,\n\t\"coord_long\": 300\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "IncidentLocation List Check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Has property: results\"] = typeof jsonData.results === \"object\";\n\ntests[\"Results has 3 or more items\"] = jsonData.results.length >= 3;\n\n\nvar obj1 = jsonData.results.find(x => x.id == globals[\"IncidentLocation_list_1\"]);\nvar obj2 = jsonData.results.find(x => x.id == globals[\"IncidentLocation_list_2\"]);\nvar obj3 = jsonData.results.find(x => x.id == globals[\"IncidentLocation_list_3\"]);\n\ntests[\"Object 1 correct radius\"] = obj1.radius === 1;\ntests[\"Object 1 correct coord lat\"] = obj1.coord_lat === 2;\ntests[\"Object 1 correct coord long\"] = obj1.coord_long === 3;\n\ntests[\"Object 2 correct radius\"] = obj2.radius === 10;\ntests[\"Object 2 correct coord lat\"] = obj2.coord_lat === 20;\ntests[\"Object 2 correct coord long\"] = obj2.coord_long === 30;\n\ntests[\"Object 3 correct radius\"] = obj3.radius === 100;\ntests[\"Object 3 correct coord lat\"] = obj3.coord_lat === 200;\ntests[\"Object 3 correct coord long\"] = obj3.coord_long === 300;\n\ntests[\"Status code is 200\"] = responseCode.code === 200;"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/IncidentLocation/list",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"id\" : {{IncidentLocation_id}}\n}"
+						},
+						"description": ""
+					},
+					"response": []
 				}
 			]
 		}

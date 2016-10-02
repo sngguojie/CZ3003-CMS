@@ -120,5 +120,25 @@ def delete(request, obj_id):
 	return response 
 
 @require_GET
+@csrf_exempt
 def list(request):
-	pass
+	all_loc = IncidentLocation.objects.all()
+
+	json_results = []
+
+	for loc in all_loc:
+		loc_json = {
+			"id" : loc.id,
+			expectedAttr["RADIUS"] : loc.radius,
+			expectedAttr["COORD_LAT"] : loc.coord_lat,
+			expectedAttr["COORD_LONG"] : loc.coord_long,
+		}
+
+		json_results.append(loc_json)
+
+	response = JsonResponse({
+		"results" : json_results,
+		"success" : True,
+		})
+
+	return response
