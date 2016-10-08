@@ -1,206 +1,166 @@
+
 from django.shortcuts import render
-from django.http import HttpResponse
-from models import IncidentCallReport
-import json
 from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
+from django.views.decorators.http import require_GET, require_POST
 
-# Create your views here.
+from models import IncidentCallReport
 
-# Attributes of IncidentCallReport
+from common import util, commonHttp
+import logging
+import json
 
-ID='report_id'
-CALLER_NAME='caller_name'
-CALLER_NRIC='caller_nric'
-CONTACT_NO='contact_no'
-DESC='description'
-TYPE='incident_type'
-DATETIME='dateTime'
+expectedAttr = {
+	'CALLER_NAME': "caller_name",
+	'CALLER_NRIC': "caller_nric",
+	'CONTACT_NO': "contact_no",
+	'DESC': "description",
+	'TYPE': "incident_type",
+	'DATETIME': "dateTime",
+}
 
+logger = logging.getLogger("django")
+
+@require_POST
 @csrf_exempt
 def create(request):
-	response ={}
+	try:
+		json_obj = commonHttp.get_json(request.body)
 
-	if request.method == 'POST':
-		data = request.POST.get('data')
-		if not is_json(data):
-			response['error'] = 'Data is not in JSON'
-			response_json = json.dumps(response)
-			return HttpResponse(response_json)	
-		data_object = json.loads(data)
+		req_attrs = [
+			expectedAttr["CALLER_NAME"], 
+			expectedAttr["CALLER_NRIC"], 
+			expectedAttr["CONTACT_NO"],
+			expectedAttr["DESC"], 
+			expectedAttr["TYPE"], 
+			expectedAttr["DATETIME"]
+			]
 
-		has_required_attr = True
-		INCIDENT_CALL_ATTR = [CALLER_NAME, CALLER_NRIC, CONTACT_NO,DESC,TYPE,DATETIME]
-		for attr in INCIDENT_ATTR:
-			has_required_attr = has_required_attr and (attr in data_object)
-		if not has_required_attr:
-			response['error'] = 'JSON does not have required attr'
-			response_json = json.dumps(response)
-			return HttpResponse(response_json)	
+		commonHttp.check_keys(json_obj, req_attrs)
 
-		new_incident_call_report = IncidentCallReport.create(
-			caller_name=data_object[CALLER_NAME]
-			caller_nric=data_object[CALLER_NRIC]
-			contact_no=data_object[CONTACT_NO]
-			description=data_object[DESC]
-			incident_type=data_object[TYPE]
-			dateTime=data_object[DATETIME]
+		new_icr = IncidentCallReport(
+			caller_name=json_obj[expectedAttr["CALLER_NAME"]],
+			caller_nric=json_obj[expectedAttr["CALLER_NRIC"]],
+			contact_no=json_obj[expectedAttr["CONTACT_NO"]],
+			description=json_obj[expectedAttr["DESC"]],
+			incident_type=json_obj[expectedAttr["TYPE"]],
+			dateTime=json_obj[expectedAttr["DATETIME"]]
 			)
-		new_incident_call_report.save()
+
+		commonHttp.save_model_obj(new_icr)
+
+		response = JsonResponse({
+			"id" : new_icr.id,
+			"success" : True
+			})
+
+		return response
+
+	except commonHttp.HttpBadRequestException as e:
+		return HttpResponseBadRequest(e.reason_phrase)
 
 
-		response['report_id'] = new_incident_call_report.id
-		response['success'] = True
-
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)
-
-	else:
-		response['error'] = 'Not a POST request'
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)	
-
+@require_GET
 @csrf_exempt
-def read(request):
-		response = {}
-	if request.method == 'POST':
-		data = request.POST.get('data')
-		if not is_json(data):
-			response['error'] = 'Data is not in JSON'
-			response_json = json.dumps(response)
-			return HttpResponse(response_json)	
-		data_object = json.loads(data)
-		
-		has_required_attr = 'report_id' in data_object
-		if not has_required_attr:
-			response['error'] = 'JSON does not have required attr'
-			response_json = json.dumps(response)
-			return HttpResponse(response_json)	
-		id_requested = data_object['report_id']
-		requested_incident_call_report = Incident.objects.get(id_requested)
-		
-		response['incident_call_report'] = requested_incident_call_report.__dict__
-		response['success'] = True
+def read(request, obj_id):
+	try:
+		icr = IncidentCallReport.objects.get(id=obj_id)
+		response = JsonResponse({
+			expectedAttr["CALLER_NAME"]: icr.caller_name, 
+			expectedAttr["CALLER_NRIC"]: icr.caller_nric, 
+			expectedAttr["CONTACT_NO"]: icr.contact_no,
+			expectedAttr["DESC"]: icr.description, 
+			expectedAttr["TYPE"]: icr.incident_type, 
+			expectedAttr["DATETIME"]: icr.dateTime,
+			"success" : True,
+			})
 
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)
+		return response
 
-	else:
-		response['error'] = 'Not a POST request'
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)	
+	except IncidentCallReport.DoesNotExist as e:
+		return HttpResponseBadRequest(str(e))
 
+@require_POST
 @csrf_exempt
-def update(request):
-	response = {}
-	if request.method == 'POST':
-		data = request.POST.get('data')
-		if not is_json(data):
-			response['error'] = 'Data is not in JSON'
-			response_json = json.dumps(response)
-			return HttpResponse(response_json)	
-		data_object = json.loads(data)
-		
-		attr_to_update = []
-		has_required_attr = False
-		INCIDENT_CALL_REPORT_ATTR = [CALLER_NAME, CALLER_NRIC, CONTACT_NO,DESC,TYPE,DATETIME]
-		for attr in INCIDENT_ATTR:
-			has_cur_attr = (attr in data_object)
-			has_required_attr = has_required_attr or has_cur_attr
-			if has_cur_attr:
-				attr_to_update.append(attr)
-		
-		has_required_attr = has_required_attr and 'report_id' in data_object
+def update(request, obj_id):
+	try:
+		# Get existing obj
+		existing_icr= IncidentCallReport.objects.get(id=obj_id)
+	except IncidentCallReport.DoesNotExist as e:
+		return HttpResponseBadRequest(str(e))
 
-		if not has_required_attr:
-			response['error'] = 'JSON does not have required attr'
-			response_json = json.dumps(response)
-			return HttpResponse(response_json)	
+	try:
+		# Update existing obj
+		json_obj = commonHttp.get_json(request.body)
 
-		try:
-			requested_incident_call_report = IncidentCallReport.objects.get(data_object['report_id'])
-		except ValueError, e:
-			response['error'] = 'Cannot find incident call report with requested id: ' + data_object['report_id']
-			response_json = json.dumps(response)
-			return HttpResponse(response_json)
+		req_attrs = [
+			expectedAttr["CALLER_NAME"], 
+			expectedAttr["CALLER_NRIC"], 
+			expectedAttr["CONTACT_NO"],
+			expectedAttr["DESC"], 
+			expectedAttr["TYPE"], 
+			expectedAttr["DATETIME"]
+			]
 
+		commonHttp.check_keys(json_obj, req_attrs)
 
-		# After a Report is sent, NAME and NRIC should not be able to update.
+		existing_icr.caller_name = json_obj.get(expectedAttr["CALLER_NAME"])
+		existing_icr.caller_nric = json_obj.get(expectedAttr["CALLER_NRIC"])
+		existing_icr.contact_no = json_obj.get(expectedAttr["CONTACT_NO"])
+		existing_icr.description = json_obj.get(expectedAttr["DESC"])
+		existing_icr.incident_type = json_obj.get(expectedAttr["TYPE"])
+		existing_icr.dateTime = json_obj.get(expectedAttr["DATETIME"])
 
-		if CONTACT_NO in attr_to_update:
-			requested_incident_call_report.contact_no = data_object[CONTACT_NO]
-			requested_incident_call_report.save()
-		if DATETIME in attr_to_update:
-			requested_incident_call_report.dateTime= data_object[DATETIME]
-			requested_incident_call_report.save()
-		if DESC in attr_to_update:
-			requested_incident_call_report.description = data_object[DESC]
-			requested_incident_call_report.save()
+		commonHttp.save_model_obj(existing_icr)
 
-		requested_incident_call_report.save()
+		response = JsonResponse({
+			"success" : True,
+			})
 
-		response['incident_call_report'] = requested_incident_call_report.__dict__
-		response['success'] = True
+		return response
 
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)
+	except commonHttp.HttpBadRequestException as e:
+		return HttpResponseBadRequest(e.reason_phrase)
 
-	else:
-		response['error'] = 'Not a POST request'
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)
-
+@require_POST
 @csrf_exempt
-def delete(request):
-	response = {}
-	if request.method == 'POST':
-		data = request.POST.get('data')
-		if not is_json(data):
-			response['error'] = 'Data is not in JSON'
-			response_json = json.dumps(response)
-			return HttpResponse(response_json)	
-		data_object = json.loads(data)
-		
-		has_required_attr = 'report_id' in data_object
-		if not has_required_attr:
-			response['error'] = 'JSON does not have required attr'
-			response_json = json.dumps(response)
-			return HttpResponse(response_json)	
-		id_requested = data_object['report_id']
-		requested_incident_call_report = IncidentCallReport.objects.get(id_requested)
-		
+def delete(request, obj_id):
+	try:
+		# Get existing obj
+		existing_icr= IncidentCallReport.objects.get(id=obj_id)
+	except IncidentCallReport.DoesNotExist as e:
+		return HttpResponseBadRequest(str(e))
 
-		requested_incident_call_report.delete()
+	existing_icr.delete()
+	response = JsonResponse({
+		"success" : True,
+		})
 
-		response['report_id'] = id_requested
-		response['success'] = True
+	return response 
 
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)
-
-	else:
-		response['error'] = 'Not a POST request'
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)
-
+@require_GET
 @csrf_exempt
 def list(request):
-	response = {}
-	if request.method == 'POST':
-		
-		incident_call_report_list = IncidentCallReport.objects.all()
+	all_icr = IncidentCallReport.objects.all()
 
-		incident_call_report_dict_list = []
-		for incidentcallreport in incident_call_report:
-			incident_call_report_dict_list.append(incidentcallreport.__dict__)
+	json_results = []
 
+	for icr in all_icr:
+		icr_json = {
+			"id" : icr.id,
+			expectedAttr["CALLER_NAME"]: icr.caller_name, 
+			expectedAttr["CALLER_NRIC"]: icr.caller_nric, 
+			expectedAttr["CONTACT_NO"]: icr.contact_no,
+			expectedAttr["DESC"]: icr.description, 
+			expectedAttr["TYPE"]: icr.incident_type, 
+			expectedAttr["DATETIME"]: icr.dateTime,
+		}
 
-		response['incident_call_report'] = incident_call_report_dict_list
-		response['success'] = True
+		json_results.append(icr_json)
 
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)
+	response = JsonResponse({
+		"results" : json_results,
+		"success" : True,
+		})
 
-	else:
-		response['error'] = 'Not a POST request'
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)
+	return response

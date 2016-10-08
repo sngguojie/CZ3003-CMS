@@ -5,11 +5,11 @@ urlpatterns = [
     # create
     url(r'^create/$', views.create ,name='create'),
     # read
-    url(r'^read/$', views.read ,name='read'),
+    url(r'^read/(?P<obj_id>[0-9]+)/$', views.read ,name='read'),
     # update
-    url(r'^update/$', views.update ,name='update'),
+    url(r'^update/(?P<obj_id>[0-9]+)/$', views.update ,name='update'),
     # delete
-    url(r'^delete/$', views.delete ,name='delete'),
+    url(r'^delete/(?P<obj_id>[0-9]+)/$', views.delete ,name='delete'),
     # list
     url(r'^list/$', views.list ,name='list'),
     

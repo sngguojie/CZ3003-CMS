@@ -1,198 +1,178 @@
 from django.shortcuts import render
-from django.http import HttpResponse
-from models import Agency
-import json
 from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
+from django.views.decorators.http import require_GET, require_POST
 
-from common import util
+from models import Agency
 
-def is_json(json_str):
-	return util.is_json(json_str)
+from common import util, commonHttp
+import logging
+import json
 
-# attributes of Agency
-NAME = 'name'
-DESC = 'description'
-SMS_CONTACT_NO = 'sms_contact_no'
-ID = 'agency_id'
+expectedAttr = {
+	'NAME': "name",
+	'DESC': "description",
+	'SMS_CONTACT_NO': "sms_contact_no",
+}
 
-# Create your views here.
+
+logger = logging.getLogger("django")
+
+@require_POST
 @csrf_exempt
 def create(request):
-	response = {}
-	if request.method == 'POST':
-		data = request.POST.get('data')
-		if not is_json(data):
-			response['error'] = 'Data is not in JSON'
-			response_json = json.dumps(response)
-			return HttpResponse(response_json)	
-		data_object = json.loads(data)
-		
-		has_required_attr = True
-		AGENCY_ATTR = [NAME, DESC, SMS_CONTACT_NO]
-		for attr in AGENCY_ATTR:
-			has_required_attr = has_required_attr and (attr in data_object)
-		if not has_required_attr:
-			response['error'] = 'JSON does not have required attr'
-			response_json = json.dumps(response)
-			return HttpResponse(response_json)	
+	try:
+		json_obj = commonHttp.get_json(request.body)
 
+		req_attrs = [
+			expectedAttr["NAME"], 
+			expectedAttr["DESC"], 
+			expectedAttr["SMS_CONTACT_NO"]
+			]
 
-		new_agency = Agency.create(
-			name=data_object[NAME], 
-			description=data_object[DESC],
-			sms_contact_no=data_object[SMS_CONTACT_NO]
+		commonHttp.check_keys(json_obj, req_attrs)
+
+		new_agency = Agency(
+			name=json_obj[expectedAttr["NAME"]],
+			description=json_obj[expectedAttr["DESC"]],
+			sms_contact_no=json_obj[expectedAttr["SMS_CONTACT_NO"]]
 			)
-		new_agency.save()
 
-		response['id'] = new_agency.id
-		response['success'] = True
+		commonHttp.save_model_obj(new_agency)
 
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)
+		response = JsonResponse({
+			"id" : new_agency.id,
+			"success" : True
+			})
 
-	else:
-		response['error'] = 'Not a POST request'
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)	
+		return response
 
-csrf_exempt
-def read(request):
-	response = {}
-	if request.method == 'POST':
-		data = request.POST.get('data')
-		if not is_json(data):
-			response['error'] = 'Data is not in JSON'
-			response_json = json.dumps(response)
-			return HttpResponse(response_json)	
-		data_object = json.loads(data)
-		
-		has_required_attr = 'agency_id' in data_object
-		if not has_required_attr:
-			response['error'] = 'JSON does not have required attr'
-			response_json = json.dumps(response)
-			return HttpResponse(response_json)	
-		id_requested = data_object['agency_id']
-		requested_agency= Agency.objects.get(id_requested)
-		
-		response['agency'] = requested_agency.__dict__
-		response['success'] = True
+	except commonHttp.HttpBadRequestException as e:
+		return HttpResponseBadRequest(e.reason_phrase)
 
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)
 
-	else:
-		response['error'] = 'Not a POST request'
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)	
-	
+@require_GET
 @csrf_exempt
-def update(request):
-	response = {}
-	if request.method == 'POST':
-		data = request.POST.get('data')
-		if not is_json(data):
-			response['error'] = 'Data is not in JSON'
-			response_json = json.dumps(response)
-			return HttpResponse(response_json)	
-		data_object = json.loads(data)
-		
-		attr_to_update = []
-		has_required_attr = False
-		AGENCY_ATTR = [NAME, DESC, SMS_CONTACT_NO]
-		for attr in AGENCY_ATTR:
-			has_cur_attr = (attr in data_object)
-			has_required_attr = has_required_attr or has_cur_attr
-			if has_cur_attr:
-				attr_to_update.append(attr)
-		
-		has_required_attr = has_required_attr and 'agency_id' in data_object
+def read(request, obj_id):
+	try:
+		agency = Agency.objects.get(id=obj_id)
+		response = JsonResponse({
+			expectedAttr["NAME"] : agency.name,
+			expectedAttr["DESC"] : agency.desc,
+			expectedAttr["SMS_CONTACT_NO"] : agency.sms_contact_no,
+			"success" : True,
+			})
 
-		if not has_required_attr:
-			response['error'] = 'JSON does not have required attr'
-			response_json = json.dumps(response)
-			return HttpResponse(response_json)	
+		return response
 
-		try:
-			requested_agency = Agency.objects.get(data_object['agency_id'])
-		except ValueError, e:
-			response['error'] = 'Cannot find agency with requested id: '+data_object['agency_id']
-			response_json = json.dumps(response)
-			return HttpResponse(response_json)
+	except Agency.DoesNotExist as e:
+		return HttpResponseBadRequest(str(e))
 
-		if NAME in attr_to_update:
-			requested_agency.name = data_object[NAME]
-			requested_agency.save()
-		if DESC in attr_to_update:
-			requested_agency.description = data_object[DESC]
-			requested_agency.save()
-		if SMS_CONTACT_NO in attr_to_update:
-			requested_agency.sms_contact_no = data_object[SMS_CONTACT_NO]
-			requested_agency.save()
-
-		requested_agency.save()
-
-		response['agency'] = requested_agency.__dict__
-		response['success'] = True
-
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)
-
-	else:
-		response['error'] = 'Not a POST request'
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)
-
+@require_POST
 @csrf_exempt
-def delete(request):
-	response = {}
-	if request.method == 'POST':
-		data = request.POST.get('data')
-		if not is_json(data):
-			response['error'] = 'Data is not in JSON'
-			response_json = json.dumps(response)
-			return HttpResponse(response_json)	
-		data_object = json.loads(data)
-		
-		has_required_attr = 'report_id' in data_object
-		if not has_required_attr:
-			response['error'] = 'JSON does not have required attr'
-			response_json = json.dumps(response)
-			return HttpResponse(response_json)	
-		id_requested = data_object['report_id']
-		requested_agency = Agency.objects.get(id_requested)
-		
+def update(request, obj_id):
+	try:
+		# Get existing obj
+		existing_agency = Agency.objects.get(id=obj_id)
+	except Agency.DoesNotExist as e:
+		return HttpResponseBadRequest(str(e))
 
-		requested_agency.delete()
+	try:
+		# Update existing obj
+		json_obj = commonHttp.get_json(request.body)
 
-		response['agency_id'] = id_requested
-		response['success'] = True
+		req_attrs = [
+			expectedAttr["NAME"],
+			expectedAttr["DESC"],
+			expectedAttr["SMS_CONTACT_NO"],
+			]
 
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)
+		commonHttp.check_keys(json_obj, req_attrs)
 
-	else:
-		response['error'] = 'Not a POST request'
-		response_json = json.dumps(response)
+		existing_agency.name = json_obj.get(expectedAttr["NAME"])
+		existing_agency.desc = json_obj.get(expectedAttr["DESC"])
+		existing_agency.sms_contact_no = json_obj.get(expectedAttr["SMS_CONTACT_NO"])
 
-csrf_exempt
+		commonHttp.save_model_obj(existing_agency)
+
+		response = JsonResponse({
+			"success" : True,
+			})
+
+		return response
+
+	except commonHttp.HttpBadRequestException as e:
+		return HttpResponseBadRequest(e.reason_phrase)
+
+@require_POST
+@csrf_exempt
+def delete(request, obj_id):
+	try:
+		# Get existing obj
+		existing_agency = Agency.objects.get(id=obj_id)
+	except Agency.DoesNotExist as e:
+		return HttpResponseBadRequest(str(e))
+
+	existing_agency.delete()
+	response = JsonResponse({
+		"success" : True,
+		})
+
+	return response 
+
+@require_GET
+@csrf_exempt
 def list(request):
-	response = {}
-	if request.method == 'POST':
-		
-		agency_list = Agency.objects.all()
+	all_agency = Agency.objects.all()
 
-		agency_dict_list = []
-		for agency in agency_list:
-			agency_dict_list.append(agency.__dict__)
+	json_results = []
+
+	for agency in all_agency:
+		agency_json = {
+			"id" : agency.id,
+			expectedAttr["NAME"] : agency.name,
+			expectedAttr["DESC"] : agency.desc,
+			expectedAttr["SMS_CONTACT_NO"] : agency.sms_contact_no,
+		}
+
+		json_results.append(agency_json)
+
+	response = JsonResponse({
+		"results" : json_results,
+		"success" : True,
+		})
+
+	return response
 
 
-		response['agency'] = agency_dict_list
-		response['success'] = True
+@require_POST
+@csrf_exempt
+def assignResourceSMS(request):
+	try:
+		json_obj = commonHttp.get_json(request.body)
 
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)
+		req_attrs = [
+			expectedAttr["TO"], 
+			expectedAttr["TITLE"], 
+			expectedAttr["MESSAGE"]
+			]
 
-	else:
-		response['error'] = 'Not a POST request'
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)
+		commonHttp.check_keys(json_obj, req_attrs)
+
+		new_agency = Agency(
+			to=json_obj[expectedAttr["TO"]],
+			title=json_obj[expectedAttr["TITLE"]],
+			message=json_obj[expectedAttr["MESSAGE"]]
+			)
+
+		commonHttp.save_model_obj(new_agency)
+
+		response = JsonResponse({
+			"id" : new_agency.id,
+			"success" : True
+			})
+
+		return response
+
+	except commonHttp.HttpBadRequestException as e:
+		return HttpResponseBadRequest(e.reason_phrase)
