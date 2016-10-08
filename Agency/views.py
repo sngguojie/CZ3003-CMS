@@ -143,3 +143,36 @@ def list(request):
 		})
 
 	return response
+
+
+@require_POST
+@csrf_exempt
+def assignResourceSMS(request):
+	try:
+		json_obj = commonHttp.get_json(request.body)
+
+		req_attrs = [
+			expectedAttr["TO"], 
+			expectedAttr["TITLE"], 
+			expectedAttr["MESSAGE"]
+			]
+
+		commonHttp.check_keys(json_obj, req_attrs)
+
+		new_agency = Agency(
+			to=json_obj[expectedAttr["TO"]],
+			title=json_obj[expectedAttr["TITLE"]],
+			message=json_obj[expectedAttr["MESSAGE"]]
+			)
+
+		commonHttp.save_model_obj(new_agency)
+
+		response = JsonResponse({
+			"id" : new_agency.id,
+			"success" : True
+			})
+
+		return response
+
+	except commonHttp.HttpBadRequestException as e:
+		return HttpResponseBadRequest(e.reason_phrase)
