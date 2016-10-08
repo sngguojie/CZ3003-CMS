@@ -1,10 +1,11 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
+from django.views.decorators.http import require_GET, require_POST
 from models import Incident
 import json
 from django.views.decorators.csrf import csrf_exempt
 
-from common import util
+from common import util, commonHttp
 
 # check if is valid json
 def is_json(json_str):
