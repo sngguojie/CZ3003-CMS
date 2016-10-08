@@ -4,6 +4,7 @@ from django.views.decorators.http import require_GET, require_POST
 from django.views.decorators.csrf import csrf_exempt
 
 from IncidentLog.models import IncidentLog
+from Incident.models import Incident
 from models import Greeting
 
 # Create your views here.
@@ -28,17 +29,19 @@ def db(request):
 @require_GET
 @csrf_exempt
 def list_logs_for_incident(request, incident_id):
-	incident_logs = IncidentLog.objects.all().filter(incident_id=incident_id)
-	
-	expectedAttr = {
+    """Gets logs for given incident"""
+
+    incident_logs = IncidentLog.objects.all().filter(incident_id=incident_id)
+
+    expectedAttr = {
 	    'DESCRIPTION' : "description",
 	    'DATETIME' : "datetime",
 	    'INCIDENT_ID' : 'incident_id'
 	}
 
-	json_results = []
+    json_results = []
 
-	for log in incident_logs:
+    for log in incident_logs:
 		log_json = {
 			"id" : log.id,
 			expectedAttr['INCIDENT_ID'] : log.incident_id,
@@ -48,9 +51,15 @@ def list_logs_for_incident(request, incident_id):
 
 		json_results.append(log_json)
 
-	response = JsonResponse({
+    response = JsonResponse({
 		"results" : json_results,
 		"success" : True,
 		})
 
-	return response
+    return response
+
+@require_GET
+@csrf_exempt
+def get_incident(request, incident_id):
+    """Gets incident details with location"""
+    pass
