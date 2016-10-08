@@ -33,6 +33,7 @@ def list_logs_for_incident(request, incident_id):
 	expectedAttr = {
 	    'DESCRIPTION' : "description",
 	    'DATETIME' : "datetime",
+	    'INCIDENT_ID' : 'incident_id'
 	}
 
 	json_results = []
@@ -40,6 +41,7 @@ def list_logs_for_incident(request, incident_id):
 	for log in incident_logs:
 		log_json = {
 			"id" : log.id,
+			expectedAttr['INCIDENT_ID'] : log.incident_id,
 			expectedAttr['DESCRIPTION'] : log.description,
 			expectedAttr['DATETIME'] : log.datetime,
 		}
