@@ -12,10 +12,10 @@ import json
 
 # attributes of Incident
 expectedAttr = {
-	'ACT_TIME' = 'activation_time',
-	'DEACT_TIME' = 'deactivation_time',
-	'DESC' = 'description',
-	'ID' = 'id',
+	'ACT_TIME' : 'activation_time',
+	'DEACT_TIME' : 'deactivation_time',
+	'DESC' : 'description',
+	'ID' : 'id',
 }
 
 
