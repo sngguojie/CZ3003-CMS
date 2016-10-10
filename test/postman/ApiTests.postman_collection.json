@@ -2,7 +2,7 @@
 	"variables": [],
 	"info": {
 		"name": "ApiTests",
-		"_postman_id": "277eeb2e-f92f-b592-b72a-0b4b6adfe9cc",
+		"_postman_id": "0c3e8267-db19-a424-3990-a0ae64a167d5",
 		"description": "",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
 	},
@@ -459,6 +459,192 @@
 					],
 					"request": {
 						"url": "{{url}}/IncidentLocation/list",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"id\" : {{IncidentLocation_id}}\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "IncidentLog",
+			"description": "",
+			"item": [
+				{
+					"name": "IncidentLog Create Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Has property: id\"] = typeof(jsonData.id) === \"number\";\ntests[\"Successful POST\"] = jsonData.success === true;\ntests[\"Status code is 200\"] = responseCode.code === 200;"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/IncidentLog/create/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"incident_id\" : 0,\n\t\"description\": \"This is incident log 0 for incident 0\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "IncidentLog Create Fail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "tests[\"Status code is 400\"] = responseCode.code === 400;"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/IncidentLog/create/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"incident_id\" : 0\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Main",
+			"description": "",
+			"item": [
+				{
+					"name": "IncidentLog Create Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Has property: id\"] = typeof(jsonData.id) === \"number\";\ntests[\"Successful POST\"] = jsonData.success === true;\ntests[\"Status code is 200\"] = responseCode.code === 200;\n\npostman.setGlobalVariable(\"IncidentLog_0\", jsonData.id);"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/IncidentLog/create/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"incident_id\" : 0,\n\t\"description\": \"Log0\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "IncidentLog Create Success 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Has property: id\"] = typeof(jsonData.id) === \"number\";\ntests[\"Successful POST\"] = jsonData.success === true;\ntests[\"Status code is 200\"] = responseCode.code === 200;\n\npostman.setGlobalVariable(\"IncidentLog_1\", jsonData.id);"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/IncidentLog/create/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"incident_id\" : 0,\n\t\"description\": \"Log1\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "IncidentLog Create Success 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Has property: id\"] = typeof(jsonData.id) === \"number\";\ntests[\"Successful POST\"] = jsonData.success === true;\ntests[\"Status code is 200\"] = responseCode.code === 200;\n\npostman.setGlobalVariable(\"IncidentLog_2\", jsonData.id);"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/IncidentLog/create/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"incident_id\" : 0,\n\t\"description\": \"Log2\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "List Added logs",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Has property: results\"] = typeof jsonData.results === \"object\";\n\ntests[\"Results has 3 or more items\"] = jsonData.results.length >= 3;\n\n\nvar obj1 = jsonData.results.find(x => x.id == globals[\"IncidentLog_0\"]);\nvar obj2 = jsonData.results.find(x => x.id == globals[\"IncidentLog_1\"]);\nvar obj3 = jsonData.results.find(x => x.id == globals[\"IncidentLog_2\"]);\n\ntests[\"Object 1 correct incident id\"] = obj1.incident_id === 0;\ntests[\"Object 1 correct incident id\"] = obj1.description === \"Log0\";\n\ntests[\"Object 2 correct incident id\"] = obj2.incident_id === 0;\ntests[\"Object 2 correct incident id\"] = obj2.description === \"Log1\";\n\ntests[\"Object 3 correct incident id\"] = obj3.incident_id === 0;\ntests[\"Object 3 correct incident id\"] = obj3.description === \"Log2\";\n\ntests[\"Status code is 200\"] = responseCode.code === 200;"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/main/list_logs/0",
 						"method": "GET",
 						"header": [
 							{
