@@ -1,202 +1,146 @@
+
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
-# Create your views here.
-from models import IncidentSummary
-import json
-from common import util
+from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
+from django.views.decorators.http import require_GET, require_POST
 
-# check if is valid json
-def is_json(json_str):
-	return util.is_json(json_str)
+from models import IncidentSummary
+
+from common import util, commonHttp
+import logging
+import json
+
+
 
 # attributes of IncidentSummary
-DATETIME = 'datetime'
-DESC = 'description'
-ID = 'id'
+expectedAttr = {
+	'DATETIME': "datetime",
+	'DESC': "description",
+	'ID': "id",
+}
 
-
+logger = logging.getLogger("django")
 
 # Create your views here.
+@require_POST
 @csrf_exempt
 def create(request):
-	response = {}
-	if request.method == 'POST':
-		data = request.POST.get('data')
-		if not is_json(data):
-			response['error'] = 'Data is not in JSON'
-			response_json = json.dumps(response)
-			return HttpResponse(response_json)	
-		data_object = json.loads(data)
-		
-		has_required_attr = True
-		INCIDENT_SUMMARY_ATTR = [DATETIME, DESC]
-		for attr in INCIDENT_SUMMARY_ATTR:
-			has_required_attr = has_required_attr and (attr in data_object)
-		if not has_required_attr:
-			response['error'] = 'JSON does not have required attr'
-			response_json = json.dumps(response)
-			return HttpResponse(response_json)	
+	try:
+		json_obj = commonHttp.get_json(request.body)
 
+		req_attrs = [
+			expectedAttr["DESC"], 
+			expectedAttr["DATETIME"]
+			]
 
-		new_incident_summary = IncidentSummary.create(
-			datetime=data_object[DATETIME], 
-			description=data_object[DESC]
+		commonHttp.check_keys(json_obj, req_attrs)
+
+		new_ism = IncidentSummary(
+			description=json_obj[expectedAttr["DESC"]],
+			datetime=json_obj[expectedAttr["DATETIME"]]
 			)
-		new_incident.save()
 
-		response['id'] = new_incident_summary.id
-		response['success'] = True
+		commonHttp.save_model_obj(new_ism)
 
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)
+		response = JsonResponse({
+			"id" : new_ism.id,
+			"success" : True
+			})
 
-	else:
-		response['error'] = 'Not a POST request'
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)	
+		return response
+
+	except commonHttp.HttpBadRequestException as e:
+		return HttpResponseBadRequest(e.reason_phrase)
+
 	
+@require_GET
 @csrf_exempt
-def read(request):
-	response = {}
-	if request.method == 'POST':
-		data = request.POST.get('data')
-		if not is_json(data):
-			response['error'] = 'Data is not in JSON'
-			response_json = json.dumps(response)
-			return HttpResponse(response_json)	
-		data_object = json.loads(data)
-		
-		has_required_attr = 'id' in data_object
-		if not has_required_attr:
-			response['error'] = 'JSON does not have required attr'
-			response_json = json.dumps(response)
-			return HttpResponse(response_json)	
-		id_requested = data_object['id']
-		try:
-			requested_incident_summary = IncidentSummary.objects.get(data_object['id'])
-		except ValueError, e:
-			response['error'] = 'Cannot find incident with requested id: '+data_object['id']
-			response_json = json.dumps(response)
-			return HttpResponse(response_json)
-		
-		response['incident_summary'] = requested_incident_summary.__dict__
-		response['success'] = True
+def read(request, obj_id):
+	try:
+		icr = IncidentSummary.objects.get(id=obj_id)
+		response = JsonResponse({
+			expectedAttr["DESC"]: icr.description, 
+			expectedAttr["DATETIME"]: icr.dateTime,
+			"success" : True,
+			})
 
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)
+		return response
 
-	else:
-		response['error'] = 'Not a POST request'
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)	
+	except IncidentSummary.DoesNotExist as e:
+		return HttpResponseBadRequest(str(e))
 	
+
+@require_POST
 @csrf_exempt
-def update(request):
-	response = {}
-	if request.method == 'POST':
-		data = request.POST.get('data')
-		if not is_json(data):
-			response['error'] = 'Data is not in JSON'
-			response_json = json.dumps(response)
-			return HttpResponse(response_json)	
-		data_object = json.loads(data)
-		
-		attr_to_update = []
-		has_required_attr = False
-		INCIDENT_SUMMARY_ATTR = [DATETIME, DESC]
-		for attr in INCIDENT_SUMMARY_ATTR:
-			has_cur_attr = (attr in data_object)
-			has_required_attr = has_required_attr or has_cur_attr
-			if has_cur_attr:
-				attr_to_update.append(attr)
-		
-		has_required_attr = has_required_attr and 'id' in data_object
+def update(request, obj_id):
+	try:
+		# Get existing obj
+		existing_ism= IncidentSummary.objects.get(id=obj_id)
+	except IncidentSummary.DoesNotExist as e:
+		return HttpResponseBadRequest(str(e))
 
-		if not has_required_attr:
-			response['error'] = 'JSON does not have required attr'
-			response_json = json.dumps(response)
-			return HttpResponse(response_json)	
+	try:
+		# Update existing obj
+		json_obj = commonHttp.get_json(request.body)
 
-		try:
-			requested_incident_summary = IncidentSummary.objects.get(data_object['id'])
-		except ValueError, e:
-			response['error'] = 'Cannot find incident with requested id: '+data_object['id']
-			response_json = json.dumps(response)
-			return HttpResponse(response_json)
+		req_attrs = [
+			expectedAttr["DESC"], 
+			expectedAttr["DATETIME"]
+			]
 
-		if DATETIME in attr_to_update:
-			requested_incident_summary.datetime = data_object[DATETIME]
-			requested_incident_summary.save()
-		
-		if DESC in attr_to_update:
-			requested_incident_summary.description = data_object[DESC]
-			requested_incident_summary.save()
+		commonHttp.check_keys(json_obj, req_attrs)
 
-		requested_incident.save()
+		existing_ism.description = json_obj.get(expectedAttr["DESC"])
+		existing_ism.dateTime = json_obj.get(expectedAttr["DATETIME"])
 
-		response['incident_summary'] = requested_incident.__dict__
-		response['success'] = True
+		commonHttp.save_model_obj(existing_ism)
 
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)
+		response = JsonResponse({
+			"success" : True,
+			})
 
-	else:
-		response['error'] = 'Not a POST request'
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)
+		return response
 
+	except commonHttp.HttpBadRequestException as e:
+		return HttpResponseBadRequest(e.reason_phrase)
+
+@require_POST
 @csrf_exempt
-def delete(request):
-	response = {}
-	if request.method == 'POST':
-		data = request.POST.get('data')
-		if not is_json(data):
-			response['error'] = 'Data is not in JSON'
-			response_json = json.dumps(response)
-			return HttpResponse(response_json)	
-		data_object = json.loads(data)
-		
-		has_required_attr = 'id' in data_object
-		if not has_required_attr:
-			response['error'] = 'JSON does not have required attr'
-			response_json = json.dumps(response)
-			return HttpResponse(response_json)	
-		id_requested = data_object['id']
-		requested_incident_summary = IncidentSummary.objects.get(id_requested)
-		
+def delete(request, obj_id):
+	try:
+		# Get existing obj
+		existing_ism= IncidentSummary.objects.get(id=obj_id)
+	except IncidentSummary.DoesNotExist as e:
+		return HttpResponseBadRequest(str(e))
 
-		requested_incident_summary.delete()
+	existing_ism.delete()
+	response = JsonResponse({
+		"success" : True,
+		})
 
-		response['id'] = id_requested
-		response['success'] = True
+	return response 
 
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)
 
-	else:
-		response['error'] = 'Not a POST request'
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)
-
+@require_GET
 @csrf_exempt
 def list(request):
-	response = {}
-	if request.method == 'POST':
-		
-		incident_summary_list = IncidentSummary.objects.all()
+	all_ism = IncidentSummary.objects.all()
 
-		incident_summaries_dict_list = []
-		for incident_summary in incident_summary_list:
-			incident_summaries_dict_list.append(incident_summary.__dict__)
+	json_results = []
 
+	for ism in all_ism:
+		ism_json = {
+			"id" : ism.id,
+			expectedAttr["DESC"]: ism.description, 
+			expectedAttr["DATETIME"]: ism.dateTime,
+		}
 
-		response['incident_summaries'] = incident_summaries_dict_list
-		response['success'] = True
+		json_results.append(ism_json)
 
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)
+	response = JsonResponse({
+		"results" : json_results,
+		"success" : True,
+		})
 
-	else:
-		response['error'] = 'Not a POST request'
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)
+	return response	
+	
