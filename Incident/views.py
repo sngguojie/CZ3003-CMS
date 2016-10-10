@@ -1,203 +1,151 @@
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.views.decorators.http import require_GET, require_POST
+
 from models import Incident
+
+from common import util
+import logging
 import json
-from django.views.decorators.csrf import csrf_exempt
 
-from common import util, commonHttp
-
-# check if is valid json
-def is_json(json_str):
-	return util.is_json(json_str)
 
 # attributes of Incident
-ACT_TIME = 'activation_time'
-DEACT_TIME = 'deactivation_time'
-DESC = 'description'
-ID = 'id'
+expectedAttr = {
+	'ACT_TIME' = 'activation_time',
+	'DEACT_TIME' = 'deactivation_time',
+	'DESC' = 'description',
+	'ID' = 'id',
+}
 
 
+logger = logging.getLogger("django")
 
-# Create your views here.
+@require_POST
 @csrf_exempt
 def create(request):
-	response = {}
-	if request.method == 'POST':
-		data = request.POST.get('data')
-		if not is_json(data):
-			response['error'] = 'Data is not in JSON'
-			response_json = json.dumps(response)
-			return HttpResponse(response_json)	
-		data_object = json.loads(data)
-		
-		has_required_attr = True
-		INCIDENT_ATTR = [ACT_TIME, DEACT_TIME, DESC]
-		for attr in INCIDENT_ATTR:
-			has_required_attr = has_required_attr and (attr in data_object)
-		if not has_required_attr:
-			response['error'] = 'JSON does not have required attr'
-			response_json = json.dumps(response)
-			return HttpResponse(response_json)	
+	try:
+		json_obj = commonHttp.get_json(request.body)
 
+		req_attrs = [
+			expectedAttr["ACT_TIME"], 
+			expectedAttr["DEACT_TIME"], 
+			expectedAttr["DESC"],
+			]
 
-		new_incident = Incident.create(
-			activation_time=data_object[ACT_TIME], 
-			deactivation_time=data_object[DEACT_TIME], 
-			description=data_object[DESC]
+		commonHttp.check_keys(json_obj, req_attrs)
+
+		new_incident = Incident(
+			activation_time=json_obj[expectedAttr["ACT_TIME"]],
+			deactivation_time=json_obj[expectedAttr["DEACT_TIME"]],
+			description=json_obj[expectedAttr["DESC"]],
 			)
-		new_incident.save()
 
-		response['id'] = new_incident.id
-		response['success'] = True
+		commonHttp.save_model_obj(new_incident)
 
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)
+		response = JsonResponse({
+			"id" : new_incident.id,
+			"success" : True
+			})
 
-	else:
-		response['error'] = 'Not a POST request'
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)	
+		return response
+
+	except commonHttp.HttpBadRequestException as e:
+		return HttpResponseBadRequest(e.reason_phrase)
 	
+
+@require_GET	
 @csrf_exempt
-def read(request):
-	response = {}
-	if request.method == 'POST':
-		data = request.POST.get('data')
-		if not is_json(data):
-			response['error'] = 'Data is not in JSON'
-			response_json = json.dumps(response)
-			return HttpResponse(response_json)	
-		data_object = json.loads(data)
-		
-		has_required_attr = 'id' in data_object
-		if not has_required_attr:
-			response['error'] = 'JSON does not have required attr'
-			response_json = json.dumps(response)
-			return HttpResponse(response_json)	
-		id_requested = data_object['id']
-		requested_incident = Incident.objects.get(id_requested)
-		
-		response['incident'] = requested_incident.__dict__
-		response['success'] = True
+def read(request, obj_id):
+	try:
+		incident = Incident.objects.get(id=obj_id)
+		response = JsonResponse({
+			expectedAttr["ACT_TIME"]: incident.activation_time, 
+			expectedAttr["DEACT_TIME"]: incident.deactivation_time,
+			expectedAttr["DESC"]: incident.description, 
+			"success" : True,
+			})
 
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)
+		return response
 
-	else:
-		response['error'] = 'Not a POST request'
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)	
+	except IncidentCallReport.DoesNotExist as e:
+		return HttpResponseBadRequest(str(e))
+
+
+@require_POST
+@csrf_exempt
+def update(request, obj_id):
+	try:
+		# Get existing obj
+		existing_incident= Incident.objects.get(id=obj_id)
+	except Incident.DoesNotExist as e:
+		return HttpResponseBadRequest(str(e))
+	try:
+		# Update existing obj
+		json_obj = commonHttp.get_json(request.body)
+
+		req_attrs = [
+			expectedAttr["ACT_TIME"], 
+			expectedAttr["DEACT_TIME"], 
+			expectedAttr["DESC"],
+			]
+
+		commonHttp.check_keys(json_obj, req_attrs)
+
+		existing_incident.activation_time = json_obj.get(expectedAttr["ACT_TIME"])
+		existing_incident.deactivation_time = json_obj.get(expectedAttr["DEACT_TIME"])
+		existing_incident.description = json_obj.get(expectedAttr["DESC"])
+		
+		commonHttp.save_model_obj(existing_icr)
+
+		response = JsonResponse({
+			"success" : True,
+			})
+
+		return response
+
+	except commonHttp.HttpBadRequestException as e:
+		return HttpResponseBadRequest(e.reason_phrase)
+
 	
+require_POST
 @csrf_exempt
-def update(request):
-	response = {}
-	if request.method == 'POST':
-		data = request.POST.get('data')
-		if not is_json(data):
-			response['error'] = 'Data is not in JSON'
-			response_json = json.dumps(response)
-			return HttpResponse(response_json)	
-		data_object = json.loads(data)
-		
-		attr_to_update = []
-		has_required_attr = False
-		INCIDENT_ATTR = [ACT_TIME, DEACT_TIME, DESC]
-		for attr in INCIDENT_ATTR:
-			has_cur_attr = (attr in data_object)
-			has_required_attr = has_required_attr or has_cur_attr
-			if has_cur_attr:
-				attr_to_update.append(attr)
-		
-		has_required_attr = has_required_attr and 'id' in data_object
+def delete(request, obj_id):
+	try:
+		# Get existing obj
+		existing_incident= Incident.objects.get(id=obj_id)
+	except Incident.DoesNotExist as e:
+		return HttpResponseBadRequest(str(e))
+	existing_incident.delete()
+	response = JsonResponse({
+		"success" : True,
+		})
 
-		if not has_required_attr:
-			response['error'] = 'JSON does not have required attr'
-			response_json = json.dumps(response)
-			return HttpResponse(response_json)	
+	return response 
+	
 
-		try:
-			requested_incident = Incident.objects.get(data_object['id'])
-		except ValueError, e:
-			response['error'] = 'Cannot find incident with requested id: '+data_object['id']
-			response_json = json.dumps(response)
-			return HttpResponse(response_json)
-
-		if ACT_TIME in attr_to_update:
-			requested_incident.activation_time = data_object[ACT_TIME]
-			requested_incident.save()
-		if DEACT_TIME in attr_to_update:
-			requested_incident.deactivation_time = data_object[DEACT_TIME]
-			requested_incident.save()
-		if DESC in attr_to_update:
-			requested_incident.description = data_object[DESC]
-			requested_incident.save()
-
-		requested_incident.save()
-
-		response['incident'] = requested_incident.__dict__
-		response['success'] = True
-
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)
-
-	else:
-		response['error'] = 'Not a POST request'
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)
-
-@csrf_exempt
-def delete(request):
-	response = {}
-	if request.method == 'POST':
-		data = request.POST.get('data')
-		if not is_json(data):
-			response['error'] = 'Data is not in JSON'
-			response_json = json.dumps(response)
-			return HttpResponse(response_json)	
-		data_object = json.loads(data)
-		
-		has_required_attr = 'id' in data_object
-		if not has_required_attr:
-			response['error'] = 'JSON does not have required attr'
-			response_json = json.dumps(response)
-			return HttpResponse(response_json)	
-		id_requested = data_object['id']
-		requested_incident = Incident.objects.get(id_requested)
-		
-
-		requested_incident.delete()
-
-		response['id'] = id_requested
-		response['success'] = True
-
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)
-
-	else:
-		response['error'] = 'Not a POST request'
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)
-
+@require_GET
 @csrf_exempt
 def list(request):
-	response = {}
-	if request.method == 'POST':
-		
-		incidents_list = Incident.objects.all()
+	all_incidents = Incident.objects.all()
 
-		incidents_dict_list = []
-		for incident in incidents_list:
-			incidents_dict_list.append(incident.__dict__)
+	json_results = []
 
+	for incident in all_incidents:
+		incident_json = {
+			"id" : incident.id,
+			expectedAttr["CALLER_NAME"]: incident.activation_time, 
+			expectedAttr["CALLER_NRIC"]: incident.deactivation_time, 
+			expectedAttr["DESC"]: incident.description, 
+			
+		}
 
-		response['incidents'] = incidents_dict_list
-		response['success'] = True
+		json_results.append(incident_json)
 
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)
+	response = JsonResponse({
+		"results" : json_results,
+		"success" : True,
+		})
 
-	else:
-		response['error'] = 'Not a POST request'
-		response_json = json.dumps(response)
-		return HttpResponse(response_json)
+	return response
+	
