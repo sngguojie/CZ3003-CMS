@@ -57,10 +57,10 @@ def create(request):
 @csrf_exempt
 def read(request, obj_id):
 	try:
-		icr = IncidentSummary.objects.get(id=obj_id)
+		ism = IncidentSummary.objects.get(id=obj_id)
 		response = JsonResponse({
-			expectedAttr["DESC"]: icr.description, 
-			expectedAttr["DATETIME"]: icr.dateTime,
+			expectedAttr["DESC"]: ism.description, 
+			expectedAttr["DATETIME"]: ism.datetime,
 			"success" : True,
 			})
 
@@ -91,7 +91,7 @@ def update(request, obj_id):
 		commonHttp.check_keys(json_obj, req_attrs)
 
 		existing_ism.description = json_obj.get(expectedAttr["DESC"])
-		existing_ism.dateTime = json_obj.get(expectedAttr["DATETIME"])
+		existing_ism.datetime = json_obj.get(expectedAttr["DATETIME"])
 
 		commonHttp.save_model_obj(existing_ism)
 
@@ -132,7 +132,7 @@ def list(request):
 		ism_json = {
 			"id" : ism.id,
 			expectedAttr["DESC"]: ism.description, 
-			expectedAttr["DATETIME"]: ism.dateTime,
+			expectedAttr["DATETIME"]: ism.datetime,
 		}
 
 		json_results.append(ism_json)
