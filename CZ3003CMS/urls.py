@@ -18,6 +18,8 @@ urlpatterns = [
     url(r'^IncidentSummary/', include('IncidentSummary.urls', namespace='IncidentSummary')),
     url(r'^IncidentLocation/', include('IncidentLocation.urls', namespace='IncidentLocation')),
     url(r'^IncidentLog/', include('IncidentLog.urls', namespace='IncidentLog')),
+    url(r'^Agency/', include('Agency.urls', namespace='Agency')),
+    url(r'^IncidentCallReport/', include('IncidentCallReport.urls', namespace='IncidentCallReport')),
 
 ]
 

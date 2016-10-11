@@ -12,5 +12,6 @@ urlpatterns = [
     url(r'^delete/(?P<obj_id>[0-9]+)/$', views.delete ,name='delete'),
     # list
     url(r'^list/$', views.list ,name='list'),
-    
+    # AssignResourceSMS
+    url(r'^assignResourceSMS/$', views.assignResourceSMS ,name='assignResourceSMS'),
 ]
