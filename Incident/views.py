@@ -5,7 +5,7 @@ from django.views.decorators.http import require_GET, require_POST
 
 from models import Incident
 
-from common import util
+from common import util, commonHttp
 import logging
 import json
 
@@ -68,7 +68,7 @@ def read(request, obj_id):
 
 		return response
 
-	except IncidentCallReport.DoesNotExist as e:
+	except Incident.DoesNotExist as e:
 		return HttpResponseBadRequest(str(e))
 
 
@@ -96,7 +96,7 @@ def update(request, obj_id):
 		existing_incident.deactivation_time = json_obj.get(expectedAttr["DEACT_TIME"])
 		existing_incident.description = json_obj.get(expectedAttr["DESC"])
 		
-		commonHttp.save_model_obj(existing_icr)
+		commonHttp.save_model_obj(existing_incident)
 
 		response = JsonResponse({
 			"success" : True,
@@ -134,8 +134,8 @@ def list(request):
 	for incident in all_incidents:
 		incident_json = {
 			"id" : incident.id,
-			expectedAttr["CALLER_NAME"]: incident.activation_time, 
-			expectedAttr["CALLER_NRIC"]: incident.deactivation_time, 
+			expectedAttr["ACT_TIME"]: incident.activation_time, 
+			expectedAttr["DEACT_TIME"]: incident.deactivation_time, 
 			expectedAttr["DESC"]: incident.description, 
 			
 		}
