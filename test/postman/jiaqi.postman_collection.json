@@ -1,0 +1,310 @@
+{
+	"variables": [],
+	"info": {
+		"name": "ApiTests",
+		"_postman_id": "0c3e8267-db19-a424-3990-a0ae64a167d5",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Agency",
+			"description": "",
+			"item": [
+				{
+					"name": "Agency Create Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Has property: id\"] = typeof(jsonData.id) === \"number\";\ntests[\"Successful POST\"] = jsonData.success === true;\ntests[\"Status code is 200\"] = responseCode.code === 200;\n\npostman.setEnvironmentVariable(\"Agency_id\", jsonData.id);"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/Agency/create/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\" : test,\n\t\"description\" : test,\n\t\"sms_contact_no\": 91393709\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Agency Read Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Response name correct\"] = jsonData.name === test;\ntests[\"Response description correct\"] = jsonData.description === test;\ntests[\"Response sms_contact_no correct\"] = jsonData.sms_contact_no === 91393709;\ntests[\"Status code is 200\"] = responseCode.code === 200;"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/Agency/read/{{Agency_id}}",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"id\" : {{Agency_id}}\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Agency Update Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Status code is 200\"] = responseCode.code === 200;"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/Agency/update/{{Agency_id}}/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\" : test1,\n\t\"description\" : test1,\n\t\"sms_contact_no\": 99991111\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Agency List Create 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Has property: id\"] = typeof(jsonData.id) === \"number\";\ntests[\"Successful POST\"] = jsonData.success === true;\ntests[\"Status code is 200\"] = responseCode.code === 200;\n\npostman.setGlobalVariable(\"Agency_list_1\", jsonData.id);"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/Agency/create/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\" : test,\n\t\"description\" : test,\n\t\"sms_contact_no\": 91393709\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Agency List Create 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Has property: id\"] = typeof(jsonData.id) === \"number\";\ntests[\"Successful POST\"] = jsonData.success === true;\ntests[\"Status code is 200\"] = responseCode.code === 200;\n\npostman.setGlobalVariable(\"Agency_list_2\", jsonData.id);"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/Agency/create/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\" : test1,\n\t\"description\" : test1,\n\t\"sms_contact_no\": 99991111\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Agency List Create 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Has property: id\"] = typeof(jsonData.id) === \"number\";\ntests[\"Successful POST\"] = jsonData.success === true;\ntests[\"Status code is 200\"] = responseCode.code === 200;\n\npostman.setGlobalVariable(\"Agency_list_3\", jsonData.id);"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/Agency/create/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\" : test2,\n\t\"description\" : test2,\n\t\"sms_contact_no\": 99992222\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Agency List Check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Has property: results\"] = typeof jsonData.results === \"object\";\n\ntests[\"Results has 3 or more items\"] = jsonData.results.length >= 3;\n\n\nvar obj1 = jsonData.results.find(x => x.id == globals[\"Agency_list_1\"]);\nvar obj2 = jsonData.results.find(x => x.id == globals[\"Agency_list_2\"]);\nvar obj3 = jsonData.results.find(x => x.id == globals[\"Agency_list_3\"]);\n\ntests[\"Object 1 correct name\"] = obj1.name === test;\ntests[\"Object 1 correct description\"] = obj1.description === test;\ntests[\"Object 1 correct sms contact no\"] = obj1.sms_contact_no === 91393709;\n\ntests[\"Object 2 correct name\"] = obj2.name === test1;\ntests[\"Object 2 correct description\"] = obj2.description === test1;\ntests[\"Object 2 correct sms_contact_no\"] = obj2.sms_contact_no === 99991111;\n\ntests[\"Object 3 correct name\"] = obj3.name === test2;\ntests[\"Object 3 description\"] = obj3.description === test2;\ntests[\"Object 3 correct sms_contact_no\"] = obj3.sms_contact_no === 99992222;\n\ntests[\"Status code is 200\"] = responseCode.code === 200;"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/Agency/list",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"id\" : {{Agency_id}}\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+					"name": "Agency Delete Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Status code is 200\"] = responseCode.code === 200;"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/Agency/delete/{{Agency_id}}/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Agency Read Deleted Object",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "tests[\"Status code is 400\"] = responseCode.code === 400;"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/Agency/read/{{Agency_id}}",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"id\" : -1\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Agency Delete invalid Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "tests[\"Status code is 400\"] = responseCode.code === 400;"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/Agency/delete/0/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"description": ""
+					},
+					"response": []
+				},
+			]
+		},
+	]
+}
+
