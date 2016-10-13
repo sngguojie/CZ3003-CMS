@@ -20,7 +20,7 @@ for user in USERS:
 	groups_str = user['groups']
 	success, groups = to_groups(groups_str)
 	if not success:
-		print groups
+		logger.debug(groups)
 		continue
 	for group in groups:
 		cur_user.groups.add(group)
