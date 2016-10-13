@@ -1,0 +1,104 @@
+{
+	"variables": [],
+	"info": {
+		"name": "loginTests",
+		"_postman_id": "0c3e8267-db19-a424-3990-a0ae64a167d5",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"description": "",
+			"item": [
+				{
+					"name": "Login as Call Center",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Has property: id\"] = typeof(jsonData.id) === \"number\";\ntests[\"Successful POST\"] = jsonData.success === true;\ntests[\"Response groups correct\"] = jsonData.groups === \"Call_Center\";\ntests[\"Status code is 200\"] = responseCode.code === 200;"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/login/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\" : \"usercc\",\n\t\"password\": \"passwordcc\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Login as PR Manager",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Has property: id\"] = typeof(jsonData.id) === \"number\";\ntests[\"Successful POST\"] = jsonData.success === true;\ntests[\"Response groups correct\"] = jsonData.groups === \"PR_Manager\";\ntests[\"Status code is 200\"] = responseCode.code === 200;"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/login/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\" : \"userpr\",\n\t\"password\": \"passwordpr\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Login as HQ Commander",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Has property: id\"] = typeof(jsonData.id) === \"number\";\ntests[\"Successful POST\"] = jsonData.success === true;\ntests[\"Response groups correct\"] = jsonData.groups === \"HQ_Commander\";\ntests[\"Status code is 200\"] = responseCode.code === 200;"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/login/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\" : \"userhq\",\n\t\"password\": \"passwordhq\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
