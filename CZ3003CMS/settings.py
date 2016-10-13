@@ -43,7 +43,8 @@ INSTALLED_APPS = (
     'IncidentLocation',
     'IncidentLog',
     'IncidentCallReport',
-    'Agency'
+    'Agency',
+    'login',
 )
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
