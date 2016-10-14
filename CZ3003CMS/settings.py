@@ -44,7 +44,11 @@ INSTALLED_APPS = (
     'IncidentLog',
     'IncidentCallReport',
     'Agency',
+<<<<<<< HEAD
     'login',
+=======
+    'SMS'
+>>>>>>> SMS-Function-Update
 )
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
