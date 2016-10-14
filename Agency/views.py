@@ -11,7 +11,7 @@ import json
 
 expectedAttr = {
 	'NAME': "name",
-	'DESC': "description",
+	'DESCRIPTION': "description",
 	'SMS_CONTACT_NO': "sms_contact_no",
 }
 
@@ -26,7 +26,7 @@ def create(request):
 
 		req_attrs = [
 			expectedAttr["NAME"], 
-			expectedAttr["DESC"], 
+			expectedAttr["DESCRIPTION"], 
 			expectedAttr["SMS_CONTACT_NO"]
 			]
 
@@ -34,7 +34,7 @@ def create(request):
 
 		new_agency = Agency(
 			name=json_obj[expectedAttr["NAME"]],
-			description=json_obj[expectedAttr["DESC"]],
+			description=json_obj[expectedAttr["DESCRIPTION"]],
 			sms_contact_no=json_obj[expectedAttr["SMS_CONTACT_NO"]]
 			)
 
@@ -58,7 +58,7 @@ def read(request, obj_id):
 		agency = Agency.objects.get(id=obj_id)
 		response = JsonResponse({
 			expectedAttr["NAME"] : agency.name,
-			expectedAttr["DESC"] : agency.desc,
+			expectedAttr["DESCRIPTION"] : agency.description,
 			expectedAttr["SMS_CONTACT_NO"] : agency.sms_contact_no,
 			"success" : True,
 			})
@@ -143,36 +143,3 @@ def list(request):
 		})
 
 	return response
-
-
-@require_POST
-@csrf_exempt
-def assignResourceSMS(request):
-	try:
-		json_obj = commonHttp.get_json(request.body)
-
-		req_attrs = [
-			expectedAttr["TO"], 
-			expectedAttr["TITLE"], 
-			expectedAttr["MESSAGE"]
-			]
-
-		commonHttp.check_keys(json_obj, req_attrs)
-
-		new_agency = Agency(
-			to=json_obj[expectedAttr["TO"]],
-			title=json_obj[expectedAttr["TITLE"]],
-			message=json_obj[expectedAttr["MESSAGE"]]
-			)
-
-		commonHttp.save_model_obj(new_agency)
-
-		response = JsonResponse({
-			"id" : new_agency.id,
-			"success" : True
-			})
-
-		return response
-
-	except commonHttp.HttpBadRequestException as e:
-		return HttpResponseBadRequest(e.reason_phrase)
