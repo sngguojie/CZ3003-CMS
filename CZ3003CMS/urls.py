@@ -21,6 +21,7 @@ urlpatterns = [
     url(r'^Agency/', include('Agency.urls', namespace='Agency')),
     url(r'^IncidentCallReport/', include('IncidentCallReport.urls', namespace='IncidentCallReport')),
     url(r'^login/', include('login.urls', namespace='login')),
+    url(r'^CMSStatus/', include('CMSStatus.urls', namespace='CMSStatus')),
 
 ]
 

@@ -5,6 +5,8 @@ from django.contrib.auth.models import Group, User
 from login.constants import GRP_NAMES, USERS
 from login.helpers import to_groups
 
+from CMSStatus.models import CMSStatus
+
 # Initialize group names
 for GRP_NAME in GRP_NAMES:
 	has_grp = len(Group.objects.filter(name=GRP_NAME)) >= 1
@@ -25,5 +27,9 @@ for user in USERS:
 	for group in groups:
 		cur_user.groups.add(group)
 		cur_user.save()
+
+# Initialize CMSStatus
+if len(CMSStatus.objects.all()) == 0:
+	CMSStatus.objects.create()
 
 
