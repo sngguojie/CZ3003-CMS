@@ -164,3 +164,15 @@ def list(request):
 		})
 
 	return response
+	
+	
+@require_POST
+@csrf_exempt
+def create_for_existing_incident(request, incident_id):
+	pass
+
+
+@require_POST
+@csrf_exempt
+def create_new_incident(request):
+	pass

@@ -1137,7 +1137,7 @@
 						}
 					],
 					"request": {
-						"url": "{{url}}/Incident/0/logs/read/",
+						"url": "{{url}}/Incident/0/logs/list/",
 						"method": "GET",
 						"header": [
 							{

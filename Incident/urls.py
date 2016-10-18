@@ -1,6 +1,7 @@
 from django.conf.urls import url
 import views
 import IncidentLog.views
+import IncidentCallReport.views
 
 urlpatterns = [
     # create
@@ -14,11 +15,9 @@ urlpatterns = [
     # list
     url(r'^list/$', views.list ,name='list'),
     # incident log routes
-    url(r'^(?P<incident_id>[0-9]+)/logs/read/$', IncidentLog.views.get_logs_for_incident, name='logs_read'),
+    url(r'^(?P<incident_id>[0-9]+)/logs/list/$', IncidentLog.views.get_logs_for_incident, name='logs_list'),
     url(r'^(?P<incident_id>[0-9]+)/logs/create/$', IncidentLog.views.create, name='logs_create'),
     # incident call report routes
-    url(r'^(?P<incident_id>[0-9]+)/callreports/create/$', views.callreports_add, name='callreports_add'),
-    url(r'^callreports/create/$', views.callreports_create, name='callreports_create'),
-    
-    
+    url(r'^(?P<incident_id>[0-9]+)/callreports/create/$', IncidentCallReport.views.create_for_existing_incident, name='callreports_add'),
+    url(r'^callreports/create/$', IncidentCallReport.views.create_new_incident, name='callreports_create'),
 ]
