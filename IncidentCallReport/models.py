@@ -8,7 +8,6 @@ class IncidentCallReport(models.Model):
 	caller_nric= models.CharField(max_length=9)
 	contact_no=models.CharField(max_length=8)
 	description= models.TextField()
-	Incident_type=models.CharField(max_length=1)
 	dateTime=models.DateField()
 	incident_id=models.IntegerField(null=False, help_text="Incident Id to link to") # Linked to Incident
 
