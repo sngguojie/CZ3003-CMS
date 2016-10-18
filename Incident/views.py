@@ -18,6 +18,7 @@ expectedAttr = {
 	'DEACT_TIME' : 'deactivation_time',
 	'DESC' : 'description',
 	'ID' : 'id',
+	'TYPE' : 'incident_type',
 }
 
 
@@ -33,6 +34,7 @@ def create(request):
 			expectedAttr["ACT_TIME"], 
 			expectedAttr["DEACT_TIME"], 
 			expectedAttr["DESC"],
+			expectedAttr["TYPE"],
 			]
 
 		commonHttp.check_keys(json_obj, req_attrs)
@@ -41,6 +43,7 @@ def create(request):
 			activation_time=json_obj[expectedAttr["ACT_TIME"]],
 			deactivation_time=json_obj[expectedAttr["DEACT_TIME"]],
 			description=json_obj[expectedAttr["DESC"]],
+			incident_type=json_obj[expectedAttr["TYPE"]],
 			)
 
 		commonHttp.save_model_obj(new_incident)
@@ -65,6 +68,7 @@ def read(request, obj_id):
 			expectedAttr["ACT_TIME"]: incident.activation_time, 
 			expectedAttr["DEACT_TIME"]: incident.deactivation_time,
 			expectedAttr["DESC"]: incident.description, 
+			expectedAttr["TYPE"]: incident.incident_type,
 			"success" : True,
 			})
 
@@ -138,7 +142,8 @@ def list(request):
 			"id" : incident.id,
 			expectedAttr["ACT_TIME"]: incident.activation_time, 
 			expectedAttr["DEACT_TIME"]: incident.deactivation_time, 
-			expectedAttr["DESC"]: incident.description, 
+			expectedAttr["DESC"]: incident.description,
+			expectedAttr["TYPE"]: incident.incident_type,
 			
 		}
 
