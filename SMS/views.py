@@ -8,6 +8,7 @@ from models import SMS
 from common import util, commonHttp
 import logging
 import json
+import requests
 
 expectedAttr = {
 	'TO': "to",
