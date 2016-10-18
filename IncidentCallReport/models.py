@@ -4,7 +4,6 @@ from django.db import models
 
 # Create your models here.
 class IncidentCallReport(models.Model):
-	report_id=models.AutoField(primary_key=True)
 	caller_name= models.TextField()
 	caller_nric= models.CharField(max_length=9)
 	contact_no=models.CharField(max_length=8)

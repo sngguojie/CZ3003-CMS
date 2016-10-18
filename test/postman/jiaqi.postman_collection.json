@@ -213,10 +213,8 @@
 						"description": ""
 					},
 					"response": []
-				}
-			]
-		},
-		{
+				},
+				{
 					"name": "Agency Delete Success",
 					"event": [
 						{
@@ -302,9 +300,10 @@
 						"description": ""
 					},
 					"response": []
-				},
+				}
 			]
-		},
+		}
 	]
 }
+
 

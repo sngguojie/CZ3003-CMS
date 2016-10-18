@@ -45,6 +45,7 @@ INSTALLED_APPS = (
     'IncidentCallReport',
     'Agency',
     'login',
+    'SMS'
     'CMSStatus',
 )
 MIDDLEWARE_CLASSES = (
