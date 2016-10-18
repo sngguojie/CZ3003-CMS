@@ -10,6 +10,7 @@ class IncidentCallReport(models.Model):
 	description= models.TextField()
 	Incident_type=models.CharField(max_length=1)
 	dateTime=models.DateField()
+	incident_id=models.IntegerField(null=False, help_text="Incident Id to link to") # Linked to Incident
 
 	def __unicode__(self):              # __unicode__ on Python 2
         	return self.description
