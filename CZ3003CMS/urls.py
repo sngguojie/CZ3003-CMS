@@ -22,6 +22,7 @@ urlpatterns = [
     url(r'^SMS/', include('SMS.urls', namespace='SMS')),
     url(r'^IncidentCallReport/', include('IncidentCallReport.urls', namespace='IncidentCallReport')),
     url(r'^login/', include('login.urls', namespace='login')),
+    url(r'^CMSStatus/', include('CMSStatus.urls', namespace='CMSStatus')),
 
 ]
 

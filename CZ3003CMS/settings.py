@@ -46,6 +46,7 @@ INSTALLED_APPS = (
     'Agency',
     'login',
     'SMS'
+    'CMSStatus',
 )
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
