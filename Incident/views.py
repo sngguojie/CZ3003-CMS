@@ -3,11 +3,13 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.views.decorators.http import require_GET, require_POST
 
+from IncidentLog.models import IncidentLog
 from models import Incident
 
 from common import util, commonHttp
 import logging
 import json
+import datetime
 
 
 # attributes of Incident
@@ -149,3 +151,15 @@ def list(request):
 
 	return response
 	
+		
+@require_POST
+@csrf_exempt
+def callreports_create(request):
+	"""Create new callreport and incident"""
+	pass
+
+@require_POST
+@csrf_exempt
+def callreports_add(request, incident_id):
+	"""Add new callreport to existing incident"""
+	pass
