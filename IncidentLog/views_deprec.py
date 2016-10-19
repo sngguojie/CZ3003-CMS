@@ -1,3 +1,5 @@
+# Deprecated File, delete when client has been changed to use new route
+
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
@@ -14,50 +16,23 @@ expectedAttr = {
 	'DATETIME' : "datetime",
 }
 
-
-@require_GET
-@csrf_exempt
-def get_logs_for_incident(request, incident_id):
-    """Gets logs for given incident"""
-
-    incident_logs = IncidentLog.objects.all().filter(incident_id=incident_id)
-
-    json_results = []
-
-    for log in incident_logs:
-		log_json = {
-			"id" : log.id,
-			expectedAttr['INCIDENT_ID'] : log.incident_id,
-			expectedAttr['DESCRIPTION'] : log.description,
-			expectedAttr['DATETIME'] : log.datetime,
-		}
-
-		json_results.append(log_json)
-
-    response = JsonResponse({
-		"results" : json_results,
-		"success" : True,
-		})
-
-    return response
-
-
 @require_POST
 @csrf_exempt
-def create(request, incident_id):
-	"""Create log for given incident"""
+def create(request):
+	"""Create log for given incident (deprecated)"""
 	
 	try:
 		json_obj = commonHttp.get_json(request.body)
 
 		req_attrs = [
+			expectedAttr["INCIDENT_ID"], 
 			expectedAttr["DESCRIPTION"]
 			]
 
 		commonHttp.check_keys(json_obj, req_attrs)
 
 		new_log = IncidentLog(
-			incident_id=incident_id,
+			incident_id=json_obj[expectedAttr["INCIDENT_ID"]],
 			datetime=datetime.datetime.now(),
 			description=json_obj[expectedAttr["DESCRIPTION"]]
 			)
@@ -73,4 +48,3 @@ def create(request, incident_id):
 
 	except commonHttp.HttpBadRequestException as e:
 		return HttpResponseBadRequest(e.reason_phrase)
-

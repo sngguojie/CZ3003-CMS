@@ -9,7 +9,6 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('Incident', '__first__'),
         ('IncidentLog', '0001_initial'),
     ]
 

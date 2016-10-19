@@ -1,10 +1,8 @@
 from django.conf.urls import url
 import views
+import views_deprec
 
 urlpatterns = [
-    # create
-    url(r'^create/$', views.create ,name='create'),
-    # list
-   #  url(r'^list/$', views.list ,name='list'),
-    
+    # Deprecated, remove after client has been updated
+    url(r'^create/$', views_deprec.create ,name='create'),
 ]
