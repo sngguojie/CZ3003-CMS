@@ -4,6 +4,8 @@ from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.views.decorators.http import require_GET, require_POST
 
 from IncidentLog.models import IncidentLog
+from IncidentLocation.views import expectedAttr as loc_expectedAttr
+from IncidentLocation.models import IncidentLocation
 from models import Incident
 
 from common import util, commonHttp
@@ -19,31 +21,81 @@ expectedAttr = {
 	'DESC' : 'description',
 	'ID' : 'id',
 	'TYPE' : 'incident_type',
+	'LOC' : 'location'
 }
 
 
 logger = logging.getLogger("django")
 
+
+def create_location(loc_obj):
+
+	loc_req_attrs = [
+		loc_expectedAttr["RADIUS"],
+		loc_expectedAttr["COORD_LAT"],
+		loc_expectedAttr["COORD_LONG"],
+	]
+	
+	commonHttp.check_keys(loc_obj, loc_req_attrs)
+
+	new_location = IncidentLocation(
+		radius=loc_obj[loc_expectedAttr["RADIUS"]],
+		coord_lat=loc_obj[loc_expectedAttr["COORD_LAT"]],
+		coord_long=loc_obj[loc_expectedAttr["COORD_LONG"]])
+		
+	commonHttp.save_model_obj(new_location)
+	
+	return new_location
+	
+def incident_to_obj(incident_model):
+	
+	location = None
+	
+	if incident_model.location:
+		location = {
+			loc_expectedAttr["RADIUS"] : incident_model.location.radius,
+			loc_expectedAttr["COORD_LAT"] : incident_model.location.coord_lat,
+			loc_expectedAttr["COORD_LONG"] : incident_model.location.coord_long,
+		}
+	
+	return {
+		expectedAttr["ACT_TIME"]: incident_model.activation_time, 
+		expectedAttr["DEACT_TIME"]: incident_model.deactivation_time,
+		expectedAttr["DESC"]: incident_model.description, 
+		expectedAttr["TYPE"]: incident_model.incident_type,
+		expectedAttr["LOC"]: location,
+		}
+		
 @require_POST
 @csrf_exempt
 def create(request):
+	"""Create Incident with IncidentLocation"""
 	try:
 		json_obj = commonHttp.get_json(request.body)
 
+		# Check request json
 		req_attrs = [
 			expectedAttr["ACT_TIME"], 
 			expectedAttr["DEACT_TIME"], 
 			expectedAttr["DESC"],
 			expectedAttr["TYPE"],
+			expectedAttr["LOC"],
 			]
 
 		commonHttp.check_keys(json_obj, req_attrs)
+		
+		
+		new_location = None
+		
+		if json_obj.get(expectedAttr["LOC"]):
+			new_location = create_location(json_obj.get(expectedAttr["LOC"]))
 
 		new_incident = Incident(
 			activation_time=json_obj[expectedAttr["ACT_TIME"]],
 			deactivation_time=json_obj[expectedAttr["DEACT_TIME"]],
 			description=json_obj[expectedAttr["DESC"]],
 			incident_type=json_obj[expectedAttr["TYPE"]],
+			location=new_location
 			)
 
 		commonHttp.save_model_obj(new_incident)
@@ -64,13 +116,12 @@ def create(request):
 def read(request, obj_id):
 	try:
 		incident = Incident.objects.get(id=obj_id)
-		response = JsonResponse({
-			expectedAttr["ACT_TIME"]: incident.activation_time, 
-			expectedAttr["DEACT_TIME"]: incident.deactivation_time,
-			expectedAttr["DESC"]: incident.description, 
-			expectedAttr["TYPE"]: incident.incident_type,
-			"success" : True,
+		response_dict = util.merge_dicts(
+			incident_to_obj(incident),
+			{
+				"success" : True,
 			})
+		response = JsonResponse(response_dict)
 
 		return response
 
@@ -138,14 +189,11 @@ def list(request):
 	json_results = []
 
 	for incident in all_incidents:
-		incident_json = {
-			"id" : incident.id,
-			expectedAttr["ACT_TIME"]: incident.activation_time, 
-			expectedAttr["DEACT_TIME"]: incident.deactivation_time, 
-			expectedAttr["DESC"]: incident.description,
-			expectedAttr["TYPE"]: incident.incident_type,
-			
-		}
+		incident_json = util.merge_dicts(
+			{
+				"id" : incident.id,
+			},
+			incident_to_obj(incident))
 
 		json_results.append(incident_json)
 

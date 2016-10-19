@@ -16,3 +16,9 @@ def check_dict_keys(dictionary, keys):
 			return False, key
 
 	return True, None
+	
+def merge_dicts(a,b):
+	"""Copys keys in dictionary b into a"""
+	c = a.copy()
+	c.update(b)
+	return c
