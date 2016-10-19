@@ -144,7 +144,7 @@ def delete(request, obj_id):
 		"success" : True,
 		})
 
-	return response 
+	return response
 
 @require_GET
 @csrf_exempt
