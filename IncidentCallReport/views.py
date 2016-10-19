@@ -5,6 +5,7 @@ from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.views.decorators.http import require_GET, require_POST
 
 from models import IncidentCallReport
+from Incident.models import Incident
 
 from common import util, commonHttp
 import logging
@@ -21,38 +22,45 @@ expectedAttr = {
 
 logger = logging.getLogger("django")
 
+def make_callreport(request, incident_id):
+	json_obj = commonHttp.get_json(request.body)
+
+	req_attrs = [
+		expectedAttr["CALLER_NAME"], 
+		expectedAttr["CALLER_NRIC"], 
+		expectedAttr["CONTACT_NO"],
+		expectedAttr["DESC"], 
+		expectedAttr["TYPE"], 
+		expectedAttr["DATETIME"],
+		]
+
+	commonHttp.check_keys(json_obj, req_attrs)
+
+	new_icr = IncidentCallReport(
+		caller_name=json_obj[expectedAttr["CALLER_NAME"]],
+		caller_nric=json_obj[expectedAttr["CALLER_NRIC"]],
+		contact_no=json_obj[expectedAttr["CONTACT_NO"]],
+		description=json_obj[expectedAttr["DESC"]],
+		incident_type=json_obj[expectedAttr["TYPE"]],
+		dateTime=json_obj[expectedAttr["DATETIME"]],
+		incident_id=incident_id
+		)
+
+	commonHttp.save_model_obj(new_icr)
+	
+	return new_icr
+
+
 @require_POST
 @csrf_exempt
-def create(request):
+def create(request, incident_id):
 	try:
-		json_obj = commonHttp.get_json(request.body)
-
-		req_attrs = [
-			expectedAttr["CALLER_NAME"], 
-			expectedAttr["CALLER_NRIC"], 
-			expectedAttr["CONTACT_NO"],
-			expectedAttr["DESC"], 
-			expectedAttr["TYPE"], 
-			expectedAttr["DATETIME"]
-			]
-
-		commonHttp.check_keys(json_obj, req_attrs)
-
-		new_icr = IncidentCallReport(
-			caller_name=json_obj[expectedAttr["CALLER_NAME"]],
-			caller_nric=json_obj[expectedAttr["CALLER_NRIC"]],
-			contact_no=json_obj[expectedAttr["CONTACT_NO"]],
-			description=json_obj[expectedAttr["DESC"]],
-			incident_type=json_obj[expectedAttr["TYPE"]],
-			dateTime=json_obj[expectedAttr["DATETIME"]]
-			)
-
-		commonHttp.save_model_obj(new_icr)
-
+		new_icr = make_callreport(request, incident_id)
+		
 		response = JsonResponse({
-			"id" : new_icr.id,
-			"success" : True
-			})
+		"id" : new_icr.id,
+		"success" : True
+		})
 
 		return response
 
@@ -164,15 +172,3 @@ def list(request):
 		})
 
 	return response
-	
-	
-@require_POST
-@csrf_exempt
-def create_for_existing_incident(request, incident_id):
-	pass
-
-
-@require_POST
-@csrf_exempt
-def create_new_incident(request):
-	pass

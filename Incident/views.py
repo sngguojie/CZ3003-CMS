@@ -156,15 +156,3 @@ def list(request):
 
 	return response
 	
-		
-@require_POST
-@csrf_exempt
-def callreports_create(request):
-	"""Create new callreport and incident"""
-	pass
-
-@require_POST
-@csrf_exempt
-def callreports_add(request, incident_id):
-	"""Add new callreport to existing incident"""
-	pass
