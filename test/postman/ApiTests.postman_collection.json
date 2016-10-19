@@ -150,7 +150,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"activation_time\" : \"2013-11-21T11:43:37Z\",\n\t\"deactivation_time\" : \"2014-10-21T11:43:37Z\",\n\t\"description\": \"Terrorist\"\n}"
+							"raw": "{\n\t\"activation_time\" : \"2013-11-21T11:43:37Z\",\n\t\"deactivation_time\" : \"2014-10-21T11:43:37Z\",\n\t\"description\": \"Terrorist\",\n\t\"location\": {\n\t\t\"radius\" : 2.0,\n\t\t\"coord_lat\" : 10.0,\n\t\t\"coord_long\" : 20.0\n\t}\n}"
 						},
 						"description": ""
 					},
@@ -163,7 +163,7 @@
 							"listen": "test",
 							"script": {
 								"type": "text/javascript",
-								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Response activation_time correct\"] = jsonData.activation_time === \"2013-11-21T11:43:37Z\";\ntests[\"Response deactivation_time correct\"] = jsonData.deactivation_time === \"2014-10-21T11:43:37Z\";\ntests[\"Response description correct\"] = jsonData.description === \"Terrorist\";\ntests[\"Status code is 200\"] = responseCode.code === 200;"
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Response activation_time correct\"] = jsonData.activation_time === \"2013-11-21T11:43:37Z\";\ntests[\"Response deactivation_time correct\"] = jsonData.deactivation_time === \"2014-10-21T11:43:37Z\";\ntests[\"Response description correct\"] = jsonData.description === \"Terrorist\";\ntests[\"Response type correct\"] = jsonData.incident_type === \"A\";\ntests[\"Response incident location radius correct\"] = jsonData.location.radius === 2.0;\ntests[\"Response incident location coord_lat correct\"] = jsonData.location.coord_lat === 10.0;\ntests[\"Response incident location coord_long correct\"] = jsonData.location.coord_long === 20.0;\ntests[\"Status code is 200\"] = responseCode.code === 200;"
 							}
 						}
 					],
@@ -186,13 +186,13 @@
 					"response": []
 				},
 				{
-					"name": "Incident Update Missing Param",
+					"name": "Incident Update Location",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"type": "text/javascript",
-								"exec": "tests[\"Status code is 400\"] = responseCode.code === 400;"
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Status code is 200\"] = responseCode.code === 200;"
 							}
 						}
 					],
@@ -208,7 +208,181 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"activation_time\" : \"2013-11-21T11:43:37Z\",\n\t\"deactivation_time\" : \"2014-10-21T11:43:37Z\",\n}"
+							"raw": "{\n\t\"location\": {\n\t\t\"radius\" : 3.0,\n\t\t\"coord_lat\" : 10.0,\n\t\t\"coord_long\" : 20.0\n\t}\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Incident Read Updated",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Response activation_time correct\"] = jsonData.activation_time === \"2013-11-21T11:43:37Z\";\ntests[\"Response deactivation_time correct\"] = jsonData.deactivation_time === \"2014-10-21T11:43:37Z\";\ntests[\"Response description correct\"] = jsonData.description === \"Terrorist\";\ntests[\"Response type correct\"] = jsonData.incident_type === \"A\";\ntests[\"Response incident location radius correct\"] = jsonData.location.radius === 3.0;\ntests[\"Response incident location coord_lat correct\"] = jsonData.location.coord_lat === 10.0;\ntests[\"Response incident location coord_long correct\"] = jsonData.location.coord_long === 20.0;\ntests[\"Status code is 200\"] = responseCode.code === 200;"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/Incident/read/{{Incident_id}}/",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"id\" : {{Incident_id}}\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Incident Update Activation Time",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Status code is 200\"] = responseCode.code === 200;"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/Incident/update/{{Incident_id}}/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"activation_time\" : \"2015-05-05T11:43:37Z\",\n\t\"deactivation_time\" : null,\n\t\"description\": null,\n\t\"location\": null\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Incident Read Updated",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Response activation_time correct\"] = jsonData.activation_time === \"2015-05-05T11:43:37Z\";\ntests[\"Response deactivation_time correct\"] = jsonData.deactivation_time === \"2014-10-21T11:43:37Z\";\ntests[\"Response description correct\"] = jsonData.description === \"Terrorist\";\ntests[\"Response type correct\"] = jsonData.incident_type === \"A\";\ntests[\"Response incident location radius correct\"] = jsonData.location.radius === 3.0;\ntests[\"Response incident location coord_lat correct\"] = jsonData.location.coord_lat === 10.0;\ntests[\"Response incident location coord_long correct\"] = jsonData.location.coord_long === 20.0;\ntests[\"Status code is 200\"] = responseCode.code === 200;"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/Incident/read/{{Incident_id}}/",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"id\" : {{Incident_id}}\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Incident Update Description",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Status code is 200\"] = responseCode.code === 200;"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/Incident/update/{{Incident_id}}/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"description\": \"Description Updated\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Incident Update Type",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Status code is 200\"] = responseCode.code === 200;"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/Incident/update/{{Incident_id}}/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"incident_type\" : \"B\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Incident Read Updated",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Response activation_time correct\"] = jsonData.activation_time === \"2015-05-05T11:43:37Z\";\ntests[\"Response deactivation_time correct\"] = jsonData.deactivation_time === \"2014-10-21T11:43:37Z\";\ntests[\"Response description correct\"] = jsonData.description === \"Description Updated\";\ntests[\"Response type correct\"] = jsonData.incident_type === \"B\";\ntests[\"Response incident location radius correct\"] = jsonData.location.radius === 3.0;\ntests[\"Response incident location coord_lat correct\"] = jsonData.location.coord_lat === 10.0;\ntests[\"Response incident location coord_long correct\"] = jsonData.location.coord_long === 20.0;\ntests[\"Status code is 200\"] = responseCode.code === 200;"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/Incident/read/{{Incident_id}}/",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"id\" : {{Incident_id}}\n}"
 						},
 						"description": ""
 					},

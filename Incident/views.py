@@ -139,18 +139,33 @@ def update(request, obj_id):
 	try:
 		# Update existing obj
 		json_obj = commonHttp.get_json(request.body)
-
-		req_attrs = [
-			expectedAttr["ACT_TIME"], 
-			expectedAttr["DEACT_TIME"], 
-			expectedAttr["DESC"],
+			
+		loc_req_attrs = [
+			loc_expectedAttr["RADIUS"],
+			loc_expectedAttr["COORD_LAT"],
+			loc_expectedAttr["COORD_LONG"],
 			]
-
-		commonHttp.check_keys(json_obj, req_attrs)
-
-		existing_incident.activation_time = json_obj.get(expectedAttr["ACT_TIME"])
-		existing_incident.deactivation_time = json_obj.get(expectedAttr["DEACT_TIME"])
-		existing_incident.description = json_obj.get(expectedAttr["DESC"])
+		
+		activation_time = json_obj.get(expectedAttr["ACT_TIME"])
+		deactivation_time = json_obj.get(expectedAttr["DEACT_TIME"])
+		description = json_obj.get(expectedAttr["DESC"])
+		incident_type = json_obj.get(expectedAttr["TYPE"])
+		loc_obj = json_obj.get(expectedAttr["LOC"])
+			
+		if activation_time:
+			existing_incident.activation_time = activation_time
+		if deactivation_time:
+			existing_incident.deactivation_time = deactivation_time
+		if description:
+			existing_incident.description = description
+		if incident_type:
+			existing_incident.incident_type = incident_type
+		if loc_obj:
+			commonHttp.check_keys(loc_obj, loc_req_attrs)
+			existing_incident.location.radius = loc_obj[loc_expectedAttr["RADIUS"]]
+			existing_incident.location.coord_lat = loc_obj[loc_expectedAttr["COORD_LAT"]]
+			existing_incident.location.coord_long = loc_obj[loc_expectedAttr["COORD_LONG"]]
+			commonHttp.save_model_obj(existing_incident.location)
 		
 		commonHttp.save_model_obj(existing_incident)
 
