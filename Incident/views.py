@@ -19,7 +19,6 @@ expectedAttr = {
 	'ACT_TIME' : 'activation_time',
 	'DEACT_TIME' : 'deactivation_time',
 	'DESC' : 'description',
-	'ID' : 'id',
 	'TYPE' : 'incident_type',
 	'LOC' : 'location'
 }
@@ -75,24 +74,24 @@ def create(request):
 
 		# Check request json
 		req_attrs = [
-			expectedAttr["ACT_TIME"], 
-			expectedAttr["DEACT_TIME"], 
 			expectedAttr["DESC"],
 			expectedAttr["TYPE"],
 			expectedAttr["LOC"],
 			]
 
 		commonHttp.check_keys(json_obj, req_attrs)
-		
-		
+
 		new_location = None
 		
 		if json_obj.get(expectedAttr["LOC"]):
 			new_location = create_location(json_obj.get(expectedAttr["LOC"]))
 
+		activation_time = json_obj.get(expectedAttr["ACT_TIME"])
+		deactivation_time = json_obj.get(expectedAttr["DEACT_TIME"])
+
 		new_incident = Incident(
-			activation_time=json_obj[expectedAttr["ACT_TIME"]],
-			deactivation_time=json_obj[expectedAttr["DEACT_TIME"]],
+			activation_time=activation_time,
+			deactivation_time=deactivation_time,
 			description=json_obj[expectedAttr["DESC"]],
 			incident_type=json_obj[expectedAttr["TYPE"]],
 			location=new_location

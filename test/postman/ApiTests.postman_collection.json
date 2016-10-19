@@ -63,7 +63,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"activation_time\" : \"2013-10-21T11:43:37Z\",\n\t\"deactivation_time\" : \"2014-10-21T11:43:37Z\"\n}"
+							"raw": "{\n\t\"description\" : \"Flooding\"\n}"
 						},
 						"description": ""
 					},
@@ -353,7 +353,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"activation_time\" : \"2001-11-21T11:43:37Z\",\n\t\"deactivation_time\" : \"2001-12-21T11:43:37Z\",\n\t\"description\": \"Flood1\",\n\t\"incident_type\": \"B\",\n\t\"location\": {\n\t\t\"radius\" : 1.0,\n\t\t\"coord_lat\" : 15.0,\n\t\t\"coord_long\" : 30.0\n\t}\n}"
+							"raw": "{\n\t\"description\": \"Flood1\",\n\t\"incident_type\": \"B\",\n\t\"location\": {\n\t\t\"radius\" : 1.0,\n\t\t\"coord_lat\" : 15.0,\n\t\t\"coord_long\" : 30.0\n\t}\n}"
 						},
 						"description": ""
 					},
@@ -382,7 +382,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"activation_time\" : \"2002-11-21T11:43:37Z\",\n\t\"deactivation_time\" : \"2002-12-21T11:43:37Z\",\n\t\"description\": \"Flood2\",\n\t\"incident_type\": \"C\",\n\t\"location\": {\n\t\t\"radius\" : 2.0,\n\t\t\"coord_lat\" : 15.0,\n\t\t\"coord_long\" : 30.0\n\t}\n}"
+							"raw": "{\n\t\"description\": \"Flood2\",\n\t\"incident_type\": \"C\",\n\t\"location\": {\n\t\t\"radius\" : 2.0,\n\t\t\"coord_lat\" : 15.0,\n\t\t\"coord_long\" : 30.0\n\t}\n}"
 						},
 						"description": ""
 					},
@@ -424,7 +424,7 @@
 							"listen": "test",
 							"script": {
 								"type": "text/javascript",
-								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Has property: results\"] = typeof jsonData.results === \"object\";\n\ntests[\"Results has 3 or more items\"] = jsonData.results.length >= 3;\n\n\nvar obj1 = jsonData.results.find(x => x.id == globals[\"Incident_list_1\"]);\nvar obj2 = jsonData.results.find(x => x.id == globals[\"Incident_list_2\"]);\nvar obj3 = jsonData.results.find(x => x.id == globals[\"Incident_list_3\"]);\n\ntests[\"Object 1 correct activation_time\"] = obj1.activation_time === \"2001-11-21T11:43:37Z\";\ntests[\"Object 1 correct deactivation_time\"] = obj1.deactivation_time === \"2001-12-21T11:43:37Z\";\ntests[\"Object 1 correct description\"] = obj1.description === \"Flood1\";\ntests[\"Object 1 correct type\"] = obj1.incident_type === \"B\";\ntests[\"Object 1 correct location radius\"] = obj1.location.radius === 1.0;\ntests[\"Object 1 correct location lat\"] = obj1.location.coord_lat === 15.0;\ntests[\"Object 1 correct location long\"] = obj1.location.coord_long === 30.0;\n\ntests[\"Object 2 correct activation_time\"] = obj2.activation_time === \"2002-11-21T11:43:37Z\";\ntests[\"Object 2 correct deactivation_time\"] = obj2.deactivation_time === \"2002-12-21T11:43:37Z\";\ntests[\"Object 2 correct description\"] = obj2.description === \"Flood2\";\ntests[\"Object 2 correct type\"] = obj2.incident_type === \"C\";\ntests[\"Object 2 correct location radius\"] = obj2.location.radius === 2.0;\ntests[\"Object 2 correct location lat\"] = obj2.location.coord_lat === 15.0;\ntests[\"Object 2 correct location long\"] = obj2.location.coord_long === 30.0;\n\ntests[\"Object 3 correct activation_time\"] = obj3.activation_time === \"2003-11-21T11:43:37Z\";\ntests[\"Object 3 correct deactivation_time\"] = obj3.deactivation_time === \"2003-12-21T11:43:37Z\";\ntests[\"Object 3 correct description\"] = obj3.description === \"Flood3\";\ntests[\"Object 3 correct type\"] = obj3.incident_type === \"D\";\ntests[\"Object 3 correct location\"] = obj3.location === null;\n\ntests[\"Status code is 200\"] = responseCode.code === 200;"
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Has property: results\"] = typeof jsonData.results === \"object\";\n\ntests[\"Results has 3 or more items\"] = jsonData.results.length >= 3;\n\n\nvar obj1 = jsonData.results.find(x => x.id == globals[\"Incident_list_1\"]);\nvar obj2 = jsonData.results.find(x => x.id == globals[\"Incident_list_2\"]);\nvar obj3 = jsonData.results.find(x => x.id == globals[\"Incident_list_3\"]);\n\ntests[\"Object 1 correct activation_time\"] = obj1.activation_time === null;\ntests[\"Object 1 correct deactivation_time\"] = obj1.deactivation_time === null;\ntests[\"Object 1 correct description\"] = obj1.description === \"Flood1\";\ntests[\"Object 1 correct type\"] = obj1.incident_type === \"B\";\ntests[\"Object 1 correct location radius\"] = obj1.location.radius === 1.0;\ntests[\"Object 1 correct location lat\"] = obj1.location.coord_lat === 15.0;\ntests[\"Object 1 correct location long\"] = obj1.location.coord_long === 30.0;\n\ntests[\"Object 2 correct activation_time\"] = obj2.activation_time === null;\ntests[\"Object 2 correct deactivation_time\"] = obj2.deactivation_time === null;\ntests[\"Object 2 correct description\"] = obj2.description === \"Flood2\";\ntests[\"Object 2 correct type\"] = obj2.incident_type === \"C\";\ntests[\"Object 2 correct location radius\"] = obj2.location.radius === 2.0;\ntests[\"Object 2 correct location lat\"] = obj2.location.coord_lat === 15.0;\ntests[\"Object 2 correct location long\"] = obj2.location.coord_long === 30.0;\n\ntests[\"Object 3 correct activation_time\"] = obj3.activation_time === \"2003-11-21T11:43:37Z\";\ntests[\"Object 3 correct deactivation_time\"] = obj3.deactivation_time === \"2003-12-21T11:43:37Z\";\ntests[\"Object 3 correct description\"] = obj3.description === \"Flood3\";\ntests[\"Object 3 correct type\"] = obj3.incident_type === \"D\";\ntests[\"Object 3 correct location\"] = obj3.location === null;\n\ntests[\"Status code is 200\"] = responseCode.code === 200;"
 							}
 						}
 					],
