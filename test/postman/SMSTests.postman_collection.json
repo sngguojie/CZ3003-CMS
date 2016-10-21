@@ -1,0 +1,40 @@
+{
+	"variables": [],
+	"info": {
+		"name": "JIaQiTests",
+		"_postman_id": "716a4db5-3623-11ad-265c-ac491ddbcec8",
+		"description": "Test for JiaQi's codes",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "SMS Create Success",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": "var jsonData = JSON.parse(responseBody);\ntests[\"Your test name\"] = jsonData.success === true;"
+					}
+				}
+			],
+			"request": {
+				"url": "{{url}}/SMS/create/",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"to\" : \"91393709\",\n\t\"title\" : \"Test Title\",\n\t\"message\": \"Test Message haha\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}

@@ -83,14 +83,14 @@ def update(request, obj_id):
 
 		req_attrs = [
 			expectedAttr["NAME"],
-			expectedAttr["DESC"],
+			expectedAttr["DESCRIPTION"],
 			expectedAttr["SMS_CONTACT_NO"],
 			]
 
 		commonHttp.check_keys(json_obj, req_attrs)
 
 		existing_agency.name = json_obj.get(expectedAttr["NAME"])
-		existing_agency.desc = json_obj.get(expectedAttr["DESC"])
+		existing_agency.desc = json_obj.get(expectedAttr["DESCRIPTION"])
 		existing_agency.sms_contact_no = json_obj.get(expectedAttr["SMS_CONTACT_NO"])
 
 		commonHttp.save_model_obj(existing_agency)
@@ -131,7 +131,7 @@ def list(request):
 		agency_json = {
 			"id" : agency.id,
 			expectedAttr["NAME"] : agency.name,
-			expectedAttr["DESC"] : agency.desc,
+			expectedAttr["DESCRIPTION"] : agency.description,
 			expectedAttr["SMS_CONTACT_NO"] : agency.sms_contact_no,
 		}
 
