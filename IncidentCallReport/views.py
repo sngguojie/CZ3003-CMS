@@ -6,6 +6,8 @@ from django.views.decorators.http import require_GET, require_POST
 
 from models import IncidentCallReport
 
+from Incident.models import Incident
+
 from common import util, commonHttp
 import logging
 import json
@@ -15,8 +17,8 @@ expectedAttr = {
 	'CALLER_NRIC': "caller_nric",
 	'CONTACT_NO': "contact_no",
 	'DESC': "description",
-	'TYPE': "incident_type",
 	'DATETIME': "dateTime",
+	'INCIDENT_ID':"incident_id"
 }
 
 logger = logging.getLogger("django")
@@ -32,8 +34,8 @@ def create(request):
 			expectedAttr["CALLER_NRIC"], 
 			expectedAttr["CONTACT_NO"],
 			expectedAttr["DESC"], 
-			expectedAttr["TYPE"], 
-			expectedAttr["DATETIME"]
+			expectedAttr["DATETIME"],
+			expectedAttr["INCIDENT_ID"]
 			]
 
 		commonHttp.check_keys(json_obj, req_attrs)
@@ -43,8 +45,8 @@ def create(request):
 			caller_nric=json_obj[expectedAttr["CALLER_NRIC"]],
 			contact_no=json_obj[expectedAttr["CONTACT_NO"]],
 			description=json_obj[expectedAttr["DESC"]],
-			incident_type=json_obj[expectedAttr["TYPE"]],
-			dateTime=json_obj[expectedAttr["DATETIME"]]
+			dateTime=json_obj[expectedAttr["DATETIME"]],
+			incident_id=json_obj[expectedAttr["INCIDENT_ID"]]
 			)
 
 		commonHttp.save_model_obj(new_icr)
@@ -70,8 +72,8 @@ def read(request, obj_id):
 			expectedAttr["CALLER_NRIC"]: icr.caller_nric, 
 			expectedAttr["CONTACT_NO"]: icr.contact_no,
 			expectedAttr["DESC"]: icr.description, 
-			expectedAttr["TYPE"]: icr.incident_type, 
 			expectedAttr["DATETIME"]: icr.dateTime,
+			expectedAttr["INCIDENT_ID"]: icr.incident_id,
 			"success" : True,
 			})
 
@@ -169,9 +171,44 @@ def list(request):
 @require_POST
 @csrf_exempt
 def create_for_existing_incident(request, incident_id):
-	pass
+	try:
+		incident = Incident.objects.get(id=incident_id)
+		json_obj = commonHttp.get_json(request.body)
 
+		req_attrs = [
+			expectedAttr["CALLER_NAME"], 
+			expectedAttr["CALLER_NRIC"], 
+			expectedAttr["CONTACT_NO"],
+			expectedAttr["DESC"], 
+			expectedAttr["DATETIME"],
+			expectedAttr["INCIDENT_ID"]
+			]
 
+		commonHttp.check_keys(json_obj, req_attrs)
+
+		new_icr = IncidentCallReport(
+			caller_name=json_obj[expectedAttr["CALLER_NAME"]],
+			caller_nric=json_obj[expectedAttr["CALLER_NRIC"]],
+			contact_no=json_obj[expectedAttr["CONTACT_NO"]],
+			description=json_obj[expectedAttr["DESC"]],
+			dateTime=json_obj[expectedAttr["DATETIME"]],
+			incident_id=json_obj[expectedAttr["INCIDENT_ID"]]
+			)
+
+		commonHttp.save_model_obj(new_icr)
+
+		response = JsonResponse({
+			"id" : new_icr.id,
+			"success" : True
+			})
+
+		return response
+
+	except Incident.DoesNotExist as e:
+		return HttpResponseBadRequest(str(e))
+	except commonHttp.HttpBadRequestException as e:
+		return HttpResponseBadRequest(e.reason_phrase)
+		
 @require_POST
 @csrf_exempt
 def create_new_incident(request):
