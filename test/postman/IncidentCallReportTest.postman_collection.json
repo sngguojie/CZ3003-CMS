@@ -1,0 +1,75 @@
+{
+	"variables": [],
+	"info": {
+		"name": "IncidentCallReportTest",
+		"_postman_id": "a044b8de-d249-1ffb-fcfe-eee16be78d3a",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "IncidentCallReport",
+			"description": "",
+			"item": [
+				{
+					"name": "IncidentCallReport Create Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Has property: id\"] = typeof(jsonData.id) === \"number\";\ntests[\"Successful POST\"] = jsonData.success === true;\ntests[\"Status code is 200\"] = responseCode.code === 200;\n\npostman.setEnvironmentVariable(\"icr_id\", jsonData.id);"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/Incident/{{Incident_id}}/callreports/create/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"caller_name\": \"name\",\n\t\"caller_nric\": \"G111111G\",\n\t\"contact_no\": \"11111111\",\n\t\"description\": \"desc\",\n\t\"dateTime\": \"2014-10-21T11:43:37Z\",\n\t\"incident_id\": \"{{Incident_id}}\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "IncidentCallReport Read Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\n\ntests[\"Response  caller_name correct\"] = jsonData.caller_name === \"name\";\ntests[\"Response caller_nric correct\"] = jsonData.caller_nric === \"G111111G\";\ntests[\"Response contact_no correct\"] = jsonData.contact_no === \"11111111\";\ntests[\"Response description correct\"] = jsonData.description === \"desc\";\ntests[\"Response dateTime correct\"] = jsonData.dateTime === \"2014-10-21T11:43:37Z\";\ntests[\"Response incident_id correct\"] = jsonData.incident_id === \"1\";\ntests[\"Status code is 200\"] = responseCode.code === 200;\n"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/IncidentCallReport/read/{{icr_id}}/",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"id\" : {{Incident_id}}\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
