@@ -7,6 +7,7 @@ from django.db import models
 class CMSStatus(models.Model):
 	
 	active = models.BooleanField(default=False)
+	last_sent = models.DateTimeField(null=True, blank=True)
 
 
 

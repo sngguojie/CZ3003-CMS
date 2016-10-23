@@ -5,9 +5,10 @@ from django.views.decorators.http import require_GET, require_POST
 
 from models import CMSStatus
 
-from common import util, commonHttp
+from common import util, commonHttp, datetime_util
 import logging
 import json
+
 
 expectedAttr = {
 	'ACTIVE': "active"
@@ -51,6 +52,9 @@ def update(request, obj_id):
 		commonHttp.check_keys(json_obj, req_attrs)
 
 		cms.active = json_obj.get(expectedAttr["ACTIVE"])
+		if cms.active:
+			# TODO: Add Send Email Function Here
+			cms.last_sent = datetime_util.sgt_now()
 		
 		commonHttp.save_model_obj(cms)
 
