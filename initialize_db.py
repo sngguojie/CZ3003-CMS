@@ -31,5 +31,3 @@ for user in USERS:
 # Initialize CMSStatus
 if len(CMSStatus.objects.all()) == 0:
 	CMSStatus.objects.create()
-
-
