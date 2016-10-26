@@ -4,7 +4,8 @@ from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.views.decorators.http import require_GET, require_POST
 
 from twitter_api import TwitterApp
-import secret
+
+import env
 
 from common import util, commonHttp
 import logging
@@ -16,7 +17,7 @@ expectedAttr = {
 
 logger = logging.getLogger("django")
 
-twitterapp = TwitterApp(secret.CONSUMER_KEY, secret.CONSUMER_SECRET, secret.ACCESS_TOKEN, secret.ACCESS_TOKEN_SECRET)
+twitterapp = TwitterApp(env.TWIT_CONSUMER_KEY, env.TWIT_CONSUMER_SECRET, env.TWIT_ACCESS_TOKEN, env.TWIT_ACCESS_TOKEN_SECRET)
 
 @require_POST
 @csrf_exempt

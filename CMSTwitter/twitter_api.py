@@ -17,8 +17,8 @@ class TwitterApp:
 
 
 if __name__ == '__main__':
-	import secret
+	import env
 	import datetime
-	twitterapp = TwitterApp(secret.CONSUMER_KEY, secret.CONSUMER_SECRET, secret.ACCESS_TOKEN, secret.ACCESS_TOKEN_SECRET)
+	twitterapp = TwitterApp(env.TWIT_CONSUMER_KEY, env.TWIT_CONSUMER_SECRET, env.TWIT_ACCESS_TOKEN, env.TWIT_ACCESS_TOKEN_SECRET)
 	twitterapp.get_public_tweets()
 	twitterapp.update_status('Crisis Update! '+str(datetime.datetime.now()))

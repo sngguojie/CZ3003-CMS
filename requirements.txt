@@ -6,3 +6,4 @@ whitenoise
 requests
 tweepy
 pytz
+django-dotenv
