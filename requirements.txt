@@ -5,3 +5,5 @@ psycopg2
 whitenoise
 requests
 tweepy
+pytz
+django-dotenv
