@@ -2,7 +2,7 @@
 
 ## Running on the cloud
 
-The root url configured is https://cz3003cms.herokuapp.com/
+The root url configured is https://crisismanagement.herokuapp.com/
 
 Heroku server is free to use, but it will go to sleep when there is 30 minutes of inactivity. When the next web request goes to the server, it may need 30 secs to load the first time and it will be at normal speeds during subsequent loads.
 
