@@ -38,8 +38,6 @@ def create(request):
 			message=json_obj[expectedAttr["MESSAGE"]]
 			)
 
-
-
 		commonHttp.save_model_obj(new_sms)
 
 		url = "http://smsgateway.me/api/v3/messages/send"
