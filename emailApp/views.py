@@ -37,13 +37,12 @@ def create(request):
 	 	cms.active = json_obj.get("active")
 	 	cms.last_sent = json_obj.get("last_sent")
 
-	 	time_difference = (datetime_util.sgt_now() - cms.last_sent) > timedelta(minutes = 30)
-	 	if (time_difference == True and cms.active == True):
+	 	time_exceeds_interval = (datetime_util.sgt_now() - cms.last_sent) > timedelta(minutes = 30)
+	 	if (time_exceeds_interval and cms.active):
 	 		email=EmailMessage(json_obj[expectedAttr["TITLE"]], json_obj[expectedAttr["BODY"]], to=[json_obj[expectedAttr["TO"]]])
 			email.send()
 		response = JsonResponse({
 		 		"active" : cms.active,
-		 		"sgt_now": datetime_util.sgt_now(),
 		 		"success" : True,
 		 		})
 		return response
