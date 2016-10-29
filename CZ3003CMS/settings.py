@@ -47,7 +47,7 @@ INSTALLED_APPS = (
     'login',
     'SMS',
     'CMSStatus',
-    'CMSTwitter',
+    'CMSSocial',
 )
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
