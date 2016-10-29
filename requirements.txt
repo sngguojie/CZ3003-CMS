@@ -7,3 +7,4 @@ requests
 tweepy
 pytz
 django-dotenv
+facebook-sdk
