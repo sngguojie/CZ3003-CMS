@@ -3,5 +3,5 @@ from __future__ import unicode_literals
 from django.apps import AppConfig
 
 
-class CmstwitterConfig(AppConfig):
-    name = 'CMSTwitter'
+class CmssocialConfig(AppConfig):
+    name = 'CMSSocial'

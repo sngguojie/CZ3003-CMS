@@ -23,7 +23,8 @@ urlpatterns = [
     url(r'^IncidentCallReport/', include('IncidentCallReport.urls', namespace='IncidentCallReport')),
     url(r'^login/', include('login.urls', namespace='login')),
     url(r'^CMSStatus/', include('CMSStatus.urls', namespace='CMSStatus')),
-    url(r'^CMSTwitter/', include('CMSTwitter.urls', namespace='CMSTwitter')),
     url(r'^emailApp/', include('emailApp.urls', namespace='emailApp')),
+    url(r'^CMSSocial/', include('CMSSocial.urls', namespace='CMSSocial')),
+
 ]
 
