@@ -8,3 +8,4 @@ tweepy
 pytz
 django-dotenv
 apscheduler
+facebook-sdk

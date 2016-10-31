@@ -1,6 +1,6 @@
 from django.test import TestCase
 from twitter_api import TwitterApp
-import secret
+import env
 import json
 import datetime
 
@@ -10,7 +10,7 @@ class CMSTwitterTest(TestCase):
 	"""
 	def test_setup(self):
 
-		self.twitter_app = TwitterApp(secret.CONSUMER_KEY, secret.CONSUMER_SECRET, secret.ACCESS_TOKEN, secret.ACCESS_TOKEN_SECRET)
+		self.twitter_app = TwitterApp(env.TWIT_CONSUMER_KEY, env.TWIT_CONSUMER_SECRET, env.TWIT_ACCESS_TOKEN, env.TWIT_ACCESS_TOKEN_SECRET)
 
 	def test_update_status(self):
 		"""
@@ -22,7 +22,7 @@ class CMSTwitterTest(TestCase):
 		data = json.dumps({'status': status})
 
 		before = self.twitter_app.get_public_tweets()
-		response = self.client.post('/CMSTwitter/update/', data, content_type="application/json")
+		response = self.client.post('/CMSSocial/update/', data, content_type="application/json")
 		after = self.twitter_app.get_public_tweets()
 		
 		self.assertEqual(response.status_code, 200)
