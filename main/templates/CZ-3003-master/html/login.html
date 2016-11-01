@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Login</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!-- Bootstrap core CSS -->
+        <link href="/static/stylesheets/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Endless CSS -->
+        <link href="/static/stylesheets/skin.min.css" rel="stylesheet">
+        
+        <!-- main CSS -->
+        <link href="/static/stylesheets/main.css" rel="stylesheet"/>
+
+    </head>
+
+    <body>
+        <div class="login-wrapper">
+            <div class="text-center">
+                <h2 class="fadeInUp animation-delay8" style="font-weight:bold">
+                    <span class="text-danger">CRISIS</span> <span style="color:#ccc; text-shadow:0 1px #fff">SG</span>
+                </h2>
+            </div>
+            <div class="login-widget animation-delay1">
+                <div class="panel panel-default">
+                    <div class="panel-heading clearfix">
+                        <div class="pull-left">
+                            <i class="fa fa-lock fa-lg"></i>Login
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <form class="form-login">
+                            <div class="form-group">
+                                <label>Username</label>
+                                <input  name="username" id="username" type="text" placeholder="Username" class="form-control input-sm bounceIn animation-delay2" required autofocus>
+                            </div>
+                            <div class="form-group">
+                                <label>Password</label>
+                                <input name="password" id="password" type="password" placeholder="Password" class="form-control input-sm bounceIn animation-delay4" required>
+                            </div>
+                            <div class="seperator"></div>
+                            <hr/>
+                            <button type="submit" class="btn btn-success btn-sm bounceIn animation-delay5 login-link pull-right" href="index.html">
+                            	<i class="fa fa-sign-in"></i> Sign in
+                            </button>
+                        </form>
+                    </div>
+                </div><!-- /panel -->
+            </div><!-- /login-widget -->
+        </div><!-- /login-wrapper -->
+        
+        <!-- loader -->
+        <div class="modal" id="loader" role="dialog">
+        	<div class="modal-dialog modal-sm">
+            	<div class="modal-content">
+                	<div class="modal-body text-center">
+                    	<h1>
+                    		<i class="glyphicon glyphicon-refresh rotating"></i>
+                        </h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Le javascript
+    ================================================== -->
+            <!-- Placed at the end of the document so the pages load faster -->
+
+            <!-- Jquery -->
+        <script src="/static/javascripts/jquery-3.1.1.min.js"></script>
+        
+        	<!-- Bootstrap -->
+        <script src="/static/javascripts/bootstrap.min.js"></script>
+        
+        	<!-- Cookie -->
+        <script src="/static/javascripts/js.cookie.js"></script>
+        
+        	<!-- Self -->
+        <script src="/static/javascripts/login.js"></script>
+        
+    </body>
+</html>
