@@ -72,10 +72,17 @@ $(function() {
 		functions for backend operations
 	*/
 	$.backend = {
-		root_url : "https://crisismanagement.herokuapp.com/",
+		//root_url : "https://crisismanagement.herokuapp.com/",
+		get_root_url : function() {
+			if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
+				return "https://crisismanagement.herokuapp.com/";	
+			}
+			
+			return "/";
+		},
 		attempt_login : function(data, successCallback, errorCallback) {
 			$.ajax({
-				url : $.backend.root_url + "login/",
+				url : $.backend.get_root_url() + "login/",
 				data : data,
 				method : "POST",
 				dataType : "json",
@@ -96,7 +103,7 @@ $(function() {
 		CMS_Status : {
 			retrieve : function(successCallback, completeCallback) {
 				$.ajax({
-					url : $.backend.root_url + "CMSStatus/read/1/",
+					url : $.backend.get_root_url() + "CMSStatus/read/1/",
 					method : "GET",
 					dataType : "json",
 					success : function(data, textStatus, jqXHR) {
