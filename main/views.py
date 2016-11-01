@@ -10,7 +10,7 @@ from models import Greeting
 # Create your views here.
 def index(request):
     # return HttpResponse('Hello from Python!')
-    return render(request, 'index.html')
+    return render(request, 'CZ-3003-master/html/login.html')
 
 
 def db(request):

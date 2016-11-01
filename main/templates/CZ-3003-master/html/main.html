@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <title>Crisis Management System</title>
+        <meta charset="utf-8">
+        
+        <!-- Bootstrap core CSS -->
+        <link href="../stylesheets/bootstrap.min.css" rel="stylesheet"/>
+        <link href="../stylesheets/main.css" rel="stylesheet"/>
+
+        <!-- Font Awesome -->
+        <link href="../stylesheets/font-awesome.min.css" rel="stylesheet"/>
+
+        <!-- Endless -->
+        <link href="../stylesheets/templet.css" rel="stylesheet"/>
+        <link href="../stylesheets/skin.min.css" rel="stylesheet"/>
+
+        <!-- Pace -->
+        <link href="../stylesheets/pace.css" rel="stylesheet"/>
+        
+        <link rel="manifest" href="../javascripts/manifest.json">
+
+    </head>
+
+    <body>
+
+        <a href="" id="theme-setting-icon" style="border-left: 1px solid #000000;border-bottom: 1px solid #000000;border-top: 1px solid black;" class="">
+          <i class="fa fa-exclamation-triangle fa-lg"></i>
+        </a>
+        <div id="theme-setting" class="">
+            <div class="title" style="border-bottom:1px solid black;">
+                <h5><strong class="no-margin">CRISIS STATUS</strong></h5>
+            </div>
+            <div class="theme-box" style="height:80px;padding-right:10px;">
+                
+                <div class="col-md-6">
+                  <a class="theme-color col-md-12" style="background:#efefef" id="skin-1"></a>
+                  
+                  <center class="col-md-12" style="margin-top:5px;margin-left:-6px;padding:0px;">DISABLE CMS</center>
+                </div>
+                <div class="col-md-6">
+                   <a class="theme-color col-md-12" style="background:#a93922" id="skin-2"></a>
+                   <center class="col-md-12" style="margin-top:5px;margin-left:-6px;padding:0px;">ENABLE CMS</center>
+                </div>
+                
+            </div>
+        </div>
+
+        <div id="wrapper" class="sidebar-mini">
+            <div id="top-nav" class="skin-1 fixed default">
+                <div class="brand">
+                    <span>CRISIS</span>
+                    <span class="text-toggle">SG</span>
+                </div><!-- /brand -->
+                <!--
+                <button type="button" class="navbar-toggle pull-left" id="sidebarToggle">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                -->
+                <!--
+                <ul class="nav-notification clearfix">
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-bell fa-lg"></i>
+                            <span class="notification-label bounceIn animation-delay6">100</span>
+                        </a>
+                        <ul class="dropdown-menu notification dropdown-3">
+                            <li><a href="#">You have 100 new notifications</a></li>
+                            <li>
+                                <a href="#">
+                                    <span class="notification-icon bg-success">
+                                        <i class="fa fa-plus"></i>
+                                    </span>
+                                    <span class="m-left-xs">New Incident</span>
+                                    <span class="time text-muted">2m ago</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <span class="notification-icon bg-success">
+                                        <i class="fa fa-plus"></i>
+                                    </span>
+                                    <span class="m-left-xs">New Incident</span>
+                                    <span class="time text-muted">2m ago</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <span class="notification-icon bg-success">
+                                        <i class="fa fa-plus"></i>
+                                    </span>
+                                    <span class="m-left-xs">New Incident</span>
+                                    <span class="time text-muted">2m ago</span>
+                                </a>
+                            </li>
+                            <li><a href="#">View all Incidents</a></li>
+                        </ul>
+                    </li>
+                    <li class="profile dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <strong>STAFF NAME</strong>
+                            <span><i class="fa fa-chevron-down"></i></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="clearfix" href="#">
+                                    <div class="detail">
+                                        <strong>STAFF NAME</strong>
+                                        <p class="grey"></p>
+                                        <p class="grey">Account Type : @session.get("staffType")<br/>Session expires at @session.get("x-auth-expire")</p>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="divider"></li>
+                            <li><a tabindex="-1" class="main-link logoutConfirm_open" href="#logoutConfirm" data-popup-ordinal="0" id="open_23096107"><i class="fa fa-lock fa-lg"></i> Log out</a></li>
+                        </ul>
+                        -->
+                    </li>
+                </ul>
+            </div><!-- /top-nav-->
+
+            <aside class="skin-1 fixed default">
+                <div class="sidebar-inner scrollable-sidebars">
+                    <div class="size-toggle">
+                        <a class="btn btn-sm" id="sizeToggle">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </a>
+                        <a class="btn btn-sm pull-right logoutConfirm_open" href="#logoutConfirm" data-popup-ordinal="1" id="open_70955223">
+                            <i class="fa fa-power-off"></i>
+                        </a>
+                    </div><!-- /size-toggle -->
+                    <!--
+                    <div class="search-block" style="visibility : hidden ;">
+                        <div class="input-group">
+                            <input type="text" class="form-control input-sm" placeholder="search here...">
+                            <span class="input-group-btn">
+                                <button class="btn btn-default btn-sm" type="button"><i class="fa fa-search"></i></button>
+                            </span>
+                        </div> <!-- /input-group -- >
+                    </div> <!-- /search-block -- >
+                    -->
+                    <div class="main-menu">
+                        <ul></ul>
+                    </div><!-- /main-menu -->
+                </div><!-- /sidebar-inner -->
+            </aside>
+
+            <div id="main-container" class="transparentscrollbar" style="overflow:scroll;">
+                <div id="map"></div>
+                <div class="grey-container shortcut-wrapper"></div>
+            </div><!-- /main-container -->
+
+        </div> <!-- end #wrapper -->
+
+        
+        <a href="" id="scroll-to-top" class="hidden-print"><i class="fa fa-chevron-up"></i></a>
+
+            <!-- Logout confirmation -->
+        <div class="custom-popup width-100" id="logoutConfirm">
+            <div class="padding-md">
+                <h4 class="m-top-none"> Do you want to logout?</h4>
+            </div>
+
+            <div class="text-center">
+                <button class="btn btn-success m-right-sm" onclick="$.page.logout()">Logout</button>
+                <a class="btn btn-danger logoutConfirm_close">Cancel</a>
+            </div>
+        </div>
+
+
+
+            <!-- Le javascript
+    ================================================== -->
+            <!-- Placed at the end of the document so the pages load faster -->
+
+
+            <!-- Jquery -->
+        <script src="../javascripts/jquery-3.1.1.min.js"></script>
+
+            <!-- Bootstrap -->
+        <script src="../javascripts/bootstrap.min.js"></script>
+
+            <!-- Modernizr -->
+        <script src="../javascripts/modernizr.min.js"></script>
+
+            <!-- Pace -->
+        <script src="../javascripts/pace.min.js"></script>
+
+            <!-- Popup Overlay -->
+        <script src="../javascripts/jquery.popupoverlay.js"></script>
+
+            <!-- Slimscroll -->
+        <script src="../javascripts/jquery.slimscroll.min.js"></script>
+
+            <!-- Cookie -->
+        <script src="../javascripts/js.cookie.js"></script>
+
+            <!-- Endless -->
+        <script src="../javascripts/skin.js"></script>
+        
+        	<!-- Firebase -->
+        <script src="https://www.gstatic.com/firebasejs/3.5.0/firebase.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/3.5.0/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/3.5.0/firebase-messaging.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/3.5.0/firebase-database.js"></script>
+        
+        	<!-- Self -->
+        <script src="../javascripts/main.js"></script>
+
+    </body>
+</html>
