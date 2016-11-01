@@ -28,12 +28,24 @@ $(function () {
 			marker : {
 				icons : {
 					Terrorist : {
-						icon : "../images/terrorist.svg",
+						icon : function() {
+							return {
+								url : "../images/terrorist.svg",
+								origin : new google.maps.Point(0, 0),
+								anchor : new google.maps.Point(12, 12)	
+							}
+						},
 						color : "#FF0000",
 						stroke : "#666666"
 					},
 					Flooding : {
-						icon : "../images/flooding.svg",
+						icon : function() {
+							return {
+								url : "../images/flooding.svg",
+								origin : new google.maps.Point(0, 0),
+								anchor : new google.maps.Point(12, 12)
+							}
+						},
 						color : "#006DF0",
 						stroke : "#666666"
 					}
@@ -48,7 +60,7 @@ $(function () {
 							map : $.google.maps.map,
 							animation: google.maps.Animation.DROP,
 							title : title,
-							icon : $.google.maps.marker.icons[type].icon
+							icon : $.google.maps.marker.icons[type].icon()
 						})
 					};
 					
@@ -374,16 +386,20 @@ $(function () {
 					
 					//TODO search for existing incidents
 					var incident_exists = true;
-					$.page.incident.list.forEach(function(incident, index) {
+					$.page.incident.list.some(function(incident, index) {
 						if (incident.location != null) {
 							var incident_location = new google.maps.LatLng(incident.location.coord_lat, incident.location.coord_long)
 							
 							var dist = google.maps.geometry.spherical.computeDistanceBetween(location, incident_location);
+							var radius = incident.location.radius;
 							
-							console.log(index, dist);
+							console.log(index, incident);
+							incident_exists = dist <= radius;
+							return incident_exists;
 						}
 					});
-					
+					console.log(incident_exists);
+					return;
 					if (!incident_exists) {
 						$.google.maps.geocode_latlng(location, function(results) {
 							var address = results[0].formatted_address;
@@ -819,11 +835,18 @@ $(function () {
 	
 	$.backend = {
 		//root_url : "https://crisismanagement.herokuapp.com/",
-		root_url : "/",
+		//root_url : "/",
+		get_root_url : function() {
+			if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
+				return "https://crisismanagement.herokuapp.com/";	
+			}
+			
+			return "/";
+		},
 		incident_logs : {
 			list : function(incident_id, successCallback) {
 				$.ajax({
-					url : $.backend.root_url + "Incident/" + incident_id + "/logs/list/",
+					url : $.backend.get_root_url() + "Incident/" + incident_id + "/logs/list/",
 					method : "GET",
 					dataType : "json",
 					success : function(data, textStatus, jqXHR) {
@@ -842,7 +865,7 @@ $(function () {
 				data = JSON.stringify(data);
 				
 				$.ajax({
-					url : $.backend.root_url + "Incident/" + incident_id + "/logs/create/",
+					url : $.backend.get_root_url() + "Incident/" + incident_id + "/logs/create/",
 					method : "POST",
 					data : data,
 					dataType : "json",
@@ -857,7 +880,7 @@ $(function () {
 		incident : {
 			list : function(successCallback) {
 				$.ajax({
-					url : $.backend.root_url + "Incident/list/",
+					url : $.backend.get_root_url() + "Incident/list/",
 					method : "GET",
 					dataType : "json",
 					success : function(data, textStatus, jqXHR) {
@@ -884,7 +907,7 @@ $(function () {
 				data = JSON.stringify(data);
 				
 				$.ajax({
-					url : $.backend.root_url + "Incident/create/",
+					url : $.backend.get_root_url() + "Incident/create/",
 					method : "POST",
 					data : data,
 					dataType : "json",
@@ -906,7 +929,7 @@ $(function () {
 				data = JSON.stringify(data);
 				
 				$.ajax({
-					url : $.backend.root_url + "Incident/update/" + incident_id + "/",
+					url : $.backend.get_root_url() + "Incident/update/" + incident_id + "/",
 					method : "POST",
 					data : data,
 					dataType : "json",
@@ -929,7 +952,7 @@ $(function () {
 				data = JSON.stringify(data);
 				
 				$.ajax({
-					url : $.backend.root_url,
+					url : $.backend.get_root_url(),
 					method : "POST",
 					data : data,
 					dataType : "json",
@@ -944,7 +967,7 @@ $(function () {
 		CMS_Status : {
 			retrieve : function(successCallback) {
 				$.ajax({
-					url : $.backend.root_url + "CMSStatus/read/1/",
+					url : $.backend.get_root_url() + "CMSStatus/read/1/",
 					method : "GET",
 					dataType : "json",
 					success : function(data, textStatus, jqXHR) {
@@ -965,7 +988,7 @@ $(function () {
 				data = JSON.stringify(data);
 				
 				$.ajax({
-					url : $.backend.root_url + "CMSStatus/update/1/",
+					url : $.backend.get_root_url() + "CMSStatus/update/1/",
 					method : "POST",
 					data : data,
 					dataType : "json",
@@ -980,7 +1003,7 @@ $(function () {
 		resource : {
 			list : function(successCallback) {
 				$.ajax({
-					url : $.backend.root_url,
+					url : $.backend.get_root_url(),
 					method : "GET",
 					dataType : "json",
 					success : function(data, textStatus, jqXHR) {
@@ -1001,7 +1024,7 @@ $(function () {
 				data = JSON.stringify(data);
 				
 				$.ajax({
-					url : $.backend.root_url + "SMS/create/",
+					url : $.backend.get_root_url() + "SMS/create/",
 					method : "POST",
 					data : data,
 					dataType : "json",
