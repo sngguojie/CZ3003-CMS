@@ -10,7 +10,7 @@ $(function () {
 			load_library : function() {
 				var googleMaps = $("<script>", {
 					type : "text/javascript",
-					src : "http://maps.googleapis.com/maps/api/js?key=" + $.google.api_key + "&region=SG&callback=" + $.google.maps.callback
+					src : "https://maps.googleapis.com/maps/api/js?key=" + $.google.api_key + "&region=SG&callback=" + $.google.maps.callback
 				}).prop("defer", true).prop("async", true);
 				
 				$("body").append(googleMaps);
