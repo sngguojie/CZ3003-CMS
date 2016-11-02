@@ -9,6 +9,7 @@ from common import util, commonHttp
 import logging
 import json
 import requests
+import env
 
 expectedAttr = {
 	'TO': "to",
@@ -41,7 +42,7 @@ def create(request):
 		commonHttp.save_model_obj(new_sms)
 
 		url = "http://smsgateway.me/api/v3/messages/send"
-		data = {'email':'xiaojia1993@gmail.com', 'password':'','device':'31268','number': json_obj[expectedAttr["TO"]],'message': json_obj[expectedAttr["TITLE"]] + "," +json_obj[expectedAttr["MESSAGE"]]}
+		data = {'email':'xiaojia1993@gmail.com', 'password':env.SMS_ACC_PASSWORD,'device':'32326','number': json_obj[expectedAttr["TO"]],'message': json_obj[expectedAttr["TITLE"]] + "," +json_obj[expectedAttr["MESSAGE"]]}
 
 		r=requests.post(url, data)
 		print "test"
