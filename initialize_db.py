@@ -4,8 +4,10 @@ from django.contrib.auth.models import Group, User
 
 from login.constants import GRP_NAMES, USERS
 from login.helpers import to_groups
+from Agency.constants import AGENCIES
 
 from CMSStatus.models import CMSStatus
+from Agency.models import Agency
 
 # Initialize group names
 for GRP_NAME in GRP_NAMES:
@@ -31,3 +33,8 @@ for user in USERS:
 # Initialize CMSStatus
 if len(CMSStatus.objects.all()) == 0:
 	CMSStatus.objects.create()
+
+# Initialize Agency
+if len(Agency.objects.all()) == 0:
+	for agency in AGENCIES:
+		Agency.objects.create(name=agency['name'],description=agency['description'],sms_contact_no=agency['sms_contact_no'])
