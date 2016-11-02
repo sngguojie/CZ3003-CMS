@@ -1393,18 +1393,18 @@
 			"description": "",
 			"item": [
 				{
-					"name": "IncidentLog Create Success (deprec)",
+					"name": "Incident Create Success",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"type": "text/javascript",
-								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Has property: id\"] = typeof(jsonData.id) === \"number\";\ntests[\"Successful POST\"] = jsonData.success === true;\ntests[\"Status code is 200\"] = responseCode.code === 200;"
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Has property: id\"] = typeof(jsonData.id) === \"number\";\ntests[\"Successful POST\"] = jsonData.success === true;\ntests[\"Status code is 200\"] = responseCode.code === 200;\n\npostman.setEnvironmentVariable(\"Incident_id_for_logs\", jsonData.id);"
 							}
 						}
 					],
 					"request": {
-						"url": "{{url}}/IncidentLog/create/",
+						"url": "{{url}}/Incident/create/",
 						"method": "POST",
 						"header": [
 							{
@@ -1415,36 +1415,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"incident_id\" : 0,\n\t\"description\": \"This is incident log 0 for incident 0\"\n}"
-						},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "IncidentLog Create Fail (deprec)",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": "tests[\"Status code is 400\"] = responseCode.code === 400;"
-							}
-						}
-					],
-					"request": {
-						"url": "{{url}}/IncidentLog/create/",
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"incident_id\" : 0\n}"
+							"raw": "{\n\t\"activation_time\" : \"2013-10-21T11:43:37Z\",\n\t\"deactivation_time\" : \"2014-10-21T11:43:37Z\",\n\t\"description\" : \"Flooding\",\n\t\"incident_type\" : \"A\",\n\t\"location\" : {\n\t\t\"radius\" : 1.0,\n\t\t\"coord_lat\" : 15.0,\n\t\t\"coord_long\" : 30.0\n\t}\n}"
 						},
 						"description": ""
 					},
@@ -1462,7 +1433,7 @@
 						}
 					],
 					"request": {
-						"url": "{{url}}/Incident/0/logs/create/",
+						"url": "{{url}}/Incident/{{Incident_id_for_logs}}/logs/create/",
 						"method": "POST",
 						"header": [
 							{
@@ -1491,7 +1462,7 @@
 						}
 					],
 					"request": {
-						"url": "{{url}}/Incident/0/logs/create/",
+						"url": "{{url}}/Incident/{{Incident_id_for_logs}}/logs/create/",
 						"method": "POST",
 						"header": [
 							{
@@ -1520,7 +1491,7 @@
 						}
 					],
 					"request": {
-						"url": "{{url}}/Incident/0/logs/create/",
+						"url": "{{url}}/Incident/{{Incident_id_for_logs}}/logs/create/",
 						"method": "POST",
 						"header": [
 							{
@@ -1549,7 +1520,7 @@
 						}
 					],
 					"request": {
-						"url": "{{url}}/Incident/0/logs/create/",
+						"url": "{{url}}/Incident/{{Incident_id_for_logs}}/logs/create/",
 						"method": "POST",
 						"header": [
 							{
@@ -1578,7 +1549,7 @@
 						}
 					],
 					"request": {
-						"url": "{{url}}/Incident/0/logs/create/",
+						"url": "{{url}}/Incident/{{Incident_id_for_logs}}/logs/create/",
 						"method": "POST",
 						"header": [
 							{
@@ -1607,7 +1578,215 @@
 						}
 					],
 					"request": {
-						"url": "{{url}}/Incident/0/logs/list/",
+						"url": "{{url}}/Incident/{{Incident_id_for_logs}}/logs/list/",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"id\" : {{IncidentLocation_id}}\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "IncidentCallReport",
+			"description": "",
+			"item": [
+				{
+					"name": "Incident Create Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Has property: id\"] = typeof(jsonData.id) === \"number\";\ntests[\"Successful POST\"] = jsonData.success === true;\ntests[\"Status code is 200\"] = responseCode.code === 200;\n\npostman.setEnvironmentVariable(\"Incident_id_for_cr\", jsonData.id);"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/Incident/create/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"activation_time\" : \"2013-10-21T11:43:37Z\",\n\t\"deactivation_time\" : \"2014-10-21T11:43:37Z\",\n\t\"description\" : \"Flooding\",\n\t\"incident_type\" : \"A\",\n\t\"location\" : {\n\t\t\"radius\" : 1.0,\n\t\t\"coord_lat\" : 15.0,\n\t\t\"coord_long\" : 30.0\n\t}\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},{
+					"name": "IncidentLog Create Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Has property: id\"] = typeof(jsonData.id) === \"number\";\ntests[\"Successful POST\"] = jsonData.success === true;\ntests[\"Status code is 200\"] = responseCode.code === 200;"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/Incident/{{Incident_id_for_cr}}/callreports/create/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"caller_name\": \"MK\",\n\t\"contact_no\":\"98765432\",\n\t\"description\":\"MBS Bomb\",\n\t\"dateTime\":\"2014-10-21T11:43:37Z\"}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "IncidentLog Create Fail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "tests[\"Status code is 400\"] = responseCode.code === 400;"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/Incident/{{Incident_id_for_cr}}/callreports/create/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "List - Create 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Has property: id\"] = typeof(jsonData.id) === \"number\";\ntests[\"Successful POST\"] = jsonData.success === true;\ntests[\"Status code is 200\"] = responseCode.code === 200;\n\npostman.setGlobalVariable(\"IncidentCallReport_0\", jsonData.id);"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/Incident/{{Incident_id_for_cr}}/callreports/create/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"caller_name\": \"MK\",\n\t\"contact_no\":\"98765432\",\n\t\"description\":\"MBS Bomb1\",\n\t\"dateTime\":\"2014-10-21T11:43:37Z\"}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "List - Create 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Has property: id\"] = typeof(jsonData.id) === \"number\";\ntests[\"Successful POST\"] = jsonData.success === true;\ntests[\"Status code is 200\"] = responseCode.code === 200;\n\npostman.setGlobalVariable(\"IncidentCallReport_1\", jsonData.id);"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/Incident/{{Incident_id_for_cr}}/callreports/create/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"caller_name\": \"MK\",\n\t\"contact_no\":\"98765432\",\n\t\"description\":\"MBS Bomb2\",\n\t\"dateTime\":\"2014-10-21T11:43:37Z\"}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "List - Create 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Has property: id\"] = typeof(jsonData.id) === \"number\";\ntests[\"Successful POST\"] = jsonData.success === true;\ntests[\"Status code is 200\"] = responseCode.code === 200;\n\npostman.setGlobalVariable(\"IncidentCallReport_2\", jsonData.id);"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/Incident/{{Incident_id_for_cr}}/callreports/create/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"caller_name\": \"MK\",\n\t\"contact_no\":\"98765432\",\n\t\"description\":\"MBS Bomb3\",\n\t\"dateTime\":\"2014-10-21T11:43:37Z\"}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Test List Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\ntests[\"Has property: success\"] = jsonData.success === true;\ntests[\"Has property: results\"] = typeof jsonData.results === \"object\";\n\ntests[\"Results has 3 or more items\"] = jsonData.results.length >= 3;\n\n\nvar obj1 = jsonData.results.find(x => x.id == globals[\"IncidentCallReport_0\"]);\nvar obj2 = jsonData.results.find(x => x.id == globals[\"IncidentCallReport_1\"]);\nvar obj3 = jsonData.results.find(x => x.id == globals[\"IncidentCallReport_2\"]);\n\ntests[\"Object 1 correct incident id\"] = obj1.incident_id === 0;\ntests[\"Object 1 correct incident id\"] = obj1.description === \"MBS Bomb1\";\n\ntests[\"Object 2 correct incident id\"] = obj2.incident_id === 0;\ntests[\"Object 2 correct incident id\"] = obj2.description === \"MBS Bomb2\";\n\ntests[\"Object 3 correct incident id\"] = obj3.incident_id === 0;\ntests[\"Object 3 correct incident id\"] = obj3.description === \"MBS Bomb3\";\n\ntests[\"Status code is 200\"] = responseCode.code === 200;"
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/Incident/{{Incident_id_for_cr}}/callreports/list/",
 						"method": "GET",
 						"header": [
 							{
