@@ -9,3 +9,4 @@ FB_PAGE_ID = os.environ.get('FB_PAGE_ID')
 FB_PAGE_ACCESS_TOKEN = os.environ.get('FB_PAGE_ACCESS_TOKEN')
 
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+SMS_ACC_PASSWORD = os.environ.get('SMS_ACC_PASSWORD')
