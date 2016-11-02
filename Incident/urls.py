@@ -19,4 +19,6 @@ urlpatterns = [
     url(r'^(?P<incident_id>[0-9]+)/logs/create/$', IncidentLog.views.create, name='logs_create'),
     # incident call report routes
     url(r'^(?P<incident_id>[0-9]+)/callreports/create/$', IncidentCallReport.views.create, name='callreports_add'),
+    url(r'^(?P<incident_id>[0-9]+)/callreports/list/$', IncidentCallReport.views.list, name='callreports_list'),
+    
 ]
