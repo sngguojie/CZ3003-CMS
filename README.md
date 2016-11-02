@@ -81,6 +81,8 @@ Go to https://addons-sso.heroku.com/apps/8cd10da0-f859-4fff-8d2e-fd3dccacafa9/ad
 
 ## Testing
 
+Remember to seed (see Seeding section below) before you run tests
+
 ### Running API Tests
 
 1. Get [Postman](https://www.getpostman.com/)
@@ -178,3 +180,10 @@ Developers can take the opportunity to review the code and suggest optimal chang
 
 After approval has been given, the creator of the Pull Request is to Merge the pull request with the **Merge** strategy, close the PR, and delete the branch.
 
+## Seeding
+
+#### Commands
+```
+$ python manage.py shell
+>>> execfile('initialize_db.py')
+```
