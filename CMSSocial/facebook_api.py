@@ -11,6 +11,14 @@ class FacebookApp:
     
     def get_api(self):
         graph = facebook.GraphAPI(self.access_token)
+        # Get page token to post as the page. You can skip 
+        # the following if you want to post as yourself. 
+        resp = graph.get_object('me/accounts')
+        page_access_token = None
+        for page in resp['data']:
+            if page['id'] == self.page_id:
+                page_access_token = page['access_token']
+        graph = facebook.GraphAPI(page_access_token)
         return graph
     
     def post_status(self, message):
