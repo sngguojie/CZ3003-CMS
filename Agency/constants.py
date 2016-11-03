@@ -1,10 +1,10 @@
 # constants.py for agencies
 AGENCIES = [{
 	'name': 'SCDF',
-	'description': 'passwordcc',
+	'description': 'Singapore Civil Defence Force',
 	'sms_contact_no': '91393709'
 }, {
 	'name': 'SPF',
-	'description': 'passwordpr',
+	'description': 'Singapore Police Force',
 	'sms_contact_no': '91393709'
 }]
