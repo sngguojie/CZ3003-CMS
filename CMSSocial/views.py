@@ -36,6 +36,8 @@ def update(request):
 		status = json_obj.get(expectedAttr['STATUS'])
 		
 		twit_status = twitterapp.update_status(status)
+		
+		
 		fb_status = facebookApp.post_status(status)
 		
 		response = JsonResponse({
