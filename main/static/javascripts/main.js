@@ -37,7 +37,7 @@ $(function () {
 						},
 						color : "#FF0000",
 						stroke : "#666666"
-					},
+					}, // end $.google.maps.marker.icons.Terrorist
 					Flooding : {
 						icon : function() {
 							return {
@@ -48,7 +48,7 @@ $(function () {
 						},
 						color : "#006DF0",
 						stroke : "#666666"
-					},
+					}, // end $.google.maps.marker.icons.Flooding
 					Others : {
 						icon : function() {
 							return {
@@ -59,12 +59,12 @@ $(function () {
 						},
 						color : "#DDDDDD",
 						stroke : "#666666"
-					}
-				},
+					} // end $.google.maps.marker.icons.Others
+				}, // end $.google.maps.marker.icons
 				/**
 				*	Adds a marker with radius(meters) on Basemap
 				*/
-				add : function(lat, lng, radius, title, type) {
+				add : function(id,lat, lng, radius, title, type,activatedDateTime) {
 					var marker = new google.maps.Marker({
 						position : {lat:lat, lng:lng},
 						map : $.google.maps.map,
@@ -72,7 +72,7 @@ $(function () {
 						title : title,
 						icon : $.google.maps.marker.icons[type].icon()
 					});
-				
+					
 					if (radius > 0) {
 						marker.circle = new google.maps.Circle({
 							strokeColor: $.google.maps.marker.icons[type].stroke,
@@ -86,25 +86,63 @@ $(function () {
 						});
 					}
 					
-					var contentString = '<div id="content">'+
+					var incidentcontentString = '<div id="content">'+
 					'<div id="siteNotice">'+
 					'</div>'+
 					'<div id="bodyContent">'+
-					'<p><b>'+title+'</b></p>'+
+					'<p><b>Incident Reported '+$.page.convert_time_display(activatedDateTime)+' at '+title+' </b></p>'+
 					'</div>'+
 					'</div>';
 					
-					var infowindow = new google.maps.InfoWindow({
-						content: contentString
+					//var mediacontentString ="";
+					var resourcecontentString = '<div id="content">'+
+					'<div id="siteNotice">'+
+					'</div>'+
+					'<div id="bodyContent">'+
+					'<p><b>Deploy resource here?</b></p>'+
+					'<form class="form" onsubmit="$.google.maps.marker.mediaInfoWindow_click('+id+', event)">'+
+					'<button type="submit">Yes</botton>'+
+					'</form>'+
+					'</div>'+
+					'</div>';
+					
+					var mediacontentString = '<div id="content">'+
+					'<div id="siteNotice">'+
+					'</div>'+
+					'<div id="bodyContent">'+
+					'<p><b>Activated time :'+$.page.convert_time_display(activatedDateTime)+'</b></p>'+
+					'</div>'+
+					'</div>';
+
+					var incidentinfowindow = new google.maps.InfoWindow({
+						content: incidentcontentString
 					});
 					
-					marker.addListener('click', function() {
-						infowindow.open(map, marker);
+					var resourceinfowindow = new google.maps.InfoWindow({
+						content: resourcecontentString
 					});
-          
-        
+					
+					var mediainfowindow = new google.maps.InfoWindow({
+						content: mediacontentString
+					});
+					
+					marker.circle.addListener('click', function() {
+						if($('#incident_view').css('display') == 'none' && $('#media_view').css('display') == 'none'){
+							resourceinfowindow.open(map, marker);
+						} else if($('#incident_view').css('display') == 'none' && $('#resource_view').css('display') == 'none'){
+							mediainfowindow.open(map, marker);
+						} else {
+							incidentinfowindow.open(map, marker);
+						}
+					});
+					
 					$.google.maps.markers.push(marker);
 				}, // end $.google.maps.marker.add
+				mediaInfoWindow_click : function(id, e){
+					e.preventDefault();
+					//TODO:infowindow on click
+					alert("update the selected id to "+id+" here!")
+				}, // end $.google.maps.marker.mediaInfoWindow_click
 				clear_all : function() {
 					$.google.maps.markers.forEach(function(marker, index) {
 						marker.setMap(null);
@@ -273,8 +311,14 @@ $(function () {
 					console.log("Message received. ", payload);
 					
 					var incident = payload.data.incident;
-					if(incident !== undefined && incident) {
+					if (incident !== undefined && incident) {
 						$.page.update();
+					}
+					
+					var incident_logs = payload.data.incident_logs;
+					if (incident_logs !== undefined && inident_logs) {
+						$.page.incident.logs.refresh_list();
+						$.page.social_media.timeline.logs.update();
 					}
 				});
 			}, // end $.google.firebase.receive_message
@@ -384,6 +428,7 @@ $(function () {
 			$.backend.incident.list().then(function(results) {
 				$.page.incident.list = results;
 				$.page.incident.update(results);
+				$.page.resource.update.incidents(results);
 				$.page.social_media.update(results);
 			});
 		}, // end $.page.update
@@ -548,7 +593,7 @@ $(function () {
 						var lat = location.coord_lat;
 						var lng = location.coord_long;
 						var radius = location.radius;
-						$.google.maps.marker.add(lat, lng, radius, description, type);
+						$.google.maps.marker.add(result.id,lat, lng, radius, description, type,result.activation_time);
 							
 						$.google.maps.map.setZoom(11);
 						$.google.maps.map.setCenter({lat:lat,lng:lng});
@@ -684,6 +729,7 @@ $(function () {
 					
 					$.backend.incident_logs.create(incident_id, description).then(function(data) {
 						$.page.incident.logs.refresh_list();
+						$.google.firebase.send_broadcast({incident_logs:true});
 						$("#log-create-description").val("");
 					});
 				}  // end $.page.incident.logs.create
@@ -697,6 +743,13 @@ $(function () {
 			} // end $.page.incident.call_report
 		},  // end $.page.incident
 		resource : {
+			icons : {
+				SPF : "fa fa-taxi fa-3x",
+				SCDF : "fa fa-bus fa-3x",
+				PUB : "fa fa-tint fa-3x",
+				SEAS : "fa fa-ambulance fa-3x"
+			}, // end $.page.resource.icons
+			inverted : false,
 			init : function(showView) {
 				//load view
 				$.ajax({
@@ -711,6 +764,16 @@ $(function () {
 						
 						if (!showView) view.hide();
 					}
+				}).done(function() {
+					$.page.resource.update.agencies();
+					
+					$("#resource-contact").on("focusin", function() {
+						$(this).prop("readonly", true);
+					});
+					
+					$("#resource-contact").on("focusout", function() {
+						$(this).prop("readonly", false);
+					});
 				});
 				
 				//load controls
@@ -738,7 +801,7 @@ $(function () {
 					}).text("Resource Management").appendTo(a);
 					
 					li.click(onClick);
-				}, //end $.page.resource.menu.main_menu
+				}, // end $.page.resource.menu.main_menu
 				shortcut : function(onClick) {
 					var a = $("<a>", {
 						class : "shortcut-link resource_btn",
@@ -755,7 +818,7 @@ $(function () {
 					}).text("Resource Management").appendTo(a);
 					
 					a.click(onClick);
-				}, //end $.page.resource.menu.shortcut
+				}, // end $.page.resource.menu.shortcut
 				click : function(e) {
 					e.preventDefault();
 				
@@ -765,7 +828,100 @@ $(function () {
 						$.page.scrollTo("#resource_view");
 					});
 				}
-			}, //end $.page.resource.menu
+			}, // end $.page.resource.menu
+			update : {
+				agencies : function() {
+					var selector = $("#resource_view #resource-selector");
+					selector.empty();
+					$.page.resource.inverted = false;
+					
+					return $.backend.resource.list().then(function(results) {
+						results.forEach(function(result, index) {
+							var col = $("<div>", {
+								class : "col-md-3"
+							}).appendTo(selector);
+							
+							var panel = $("<div>", {
+								class : "panel-stat3",
+								title : result.description,
+								"data-contact" : result.sms_contact_no,
+								"data-id" : result.id
+							}).appendTo(col);
+							
+							if ($.page.resource.inverted) {
+								panel.addClass("bg-danger");	
+							} else {
+								panel.addClass("bg-primary");	
+							}
+							
+							panel.click($.page.resource.agency_onclick);
+							
+							var header = $("<h2>", {
+								class : "m-top-none"
+							}).text(result.name).appendTo(panel);
+							
+							$("<small>").text(result.description).appendTo(panel);
+							
+							var icon_wrapper = $("<div>", {
+								class : "stat-icon"
+							}).appendTo(panel);
+							
+							$("<i>", {
+								class : $.page.resource.icons[result.name]
+							}).appendTo(icon_wrapper);
+							
+							$.page.resource.inverted = !$.page.resource.inverted;
+						});
+					});
+				},
+				incidents : function(incidents) {
+					var select = $("#resource-incidents");
+					select.empty();
+					
+					var option = $("<option>", {
+						value : "",
+						default : ""
+					}).text("").appendTo(select);
+					
+					incidents.forEach(function(incident, index) {
+						var deactivation_time = incident.deactivation_time;
+						
+						if (deactivation_time !== undefined && deactivation_time !== null) {
+							return;
+						}
+						
+						var title = $.page.incident.get_type_text(incident.incident_type);
+						title += " @ " + incident.description;
+						
+						var opt_text = incident.id + ": ";
+						opt_text += title;
+						opt_text += " [" + new Date(incident.activation_time) + "]";
+						
+						var option = $("<option>", {
+							value : title
+						}).text(opt_text).appendTo(select);
+					});
+				} // end $.page.resource.update.incidents
+			}, // end $.page.resource.update
+			agency_onclick : function(e) {
+				var target = $(e.currentTarget);
+				var contact = target.attr("data-contact");
+				var description = target.attr("title");
+				
+				$("#resource-contact").val(description + " (" + contact + ")");
+				$("#resource-contact").attr("data-contact", contact);
+			}, // end $.page.resource.agency_onclick
+			form_submit : function(form, e) {
+				e.preventDefault();
+				
+				var contact = $("#resource-contact").attr("data-contact");
+				var title = $("#resource-incidents").val();
+				var message = $("#resource-message").val();
+				
+				$.backend.resource.assign(contact, title, message).then(function(data) {
+					form.reset();
+				});
+			} // end $.page.resource.form_submit
 		}, // end $.page.resource
 		social_media : {
 			init : function(showView) {
@@ -969,7 +1125,16 @@ $(function () {
 					var timeline = $(".timeline_main");
 					$(".timeline_main").scrollLeft(timeline.width());
 				}
-			} // end $.page.social_media.menu
+			}, // end $.page.social_media.menu
+			post_to : function(form, e) {
+				e.preventDefault();
+				
+				var content = $("#social_media_content").val();
+				$.backend.social_media.publish(content).then(function(result) {
+					console.log("test: ", result);
+					$("#social-media-form")[0].reset();
+				});
+			} // end $.page.social_media.post_to
 		}, // end $.page.social_media
 		convert_time_display : function(datetimeString) {
 			var datetime = new Date(datetimeString);
@@ -1169,7 +1334,7 @@ $(function () {
 					description : description,
 					dateTime : new Date()
 				}
-				//[TODO]
+				
 				// stringify json for backend to recognise
 				data = JSON.stringify(data);
 				
@@ -1251,12 +1416,12 @@ $(function () {
 			list : function() {
 				var promise = new Promise(function(resolve, reject) {
 					$.ajax({
-						url : $.backend.get_root_url(),
+						url : $.backend.get_root_url() + "Agency/list/",
 						method : "GET",
 						dataType : "json",
 						success : function(data, textStatus, jqXHR) {
 							if (data.success) {
-								resolve(data);	
+								resolve(data.results);	
 							} else {
 								reject("Failed to retrieve resources.");	
 							}
@@ -1286,7 +1451,7 @@ $(function () {
 						dataType : "json",
 						success : function(data, textStatus, jqXHR) {
 							if (data.success) {
-								resolve(data);	
+								resolve(data.id);	
 							} else {
 								reject("Failed to send SMS.");	
 							}
@@ -1299,10 +1464,10 @@ $(function () {
 				return promise;
 			}, // end $.backend.resource.assign
 		}, // end $.backend.resource
-		social_managment : {
-		  create : function(status_string) {
+		social_media : {
+		  publish : function(status) {
 			  var data = {
-				  "status" : $("#social_media_content").val()
+				  status : status
 			  };
 			  
 			  // stringify json for backend to recognise
@@ -1316,7 +1481,8 @@ $(function () {
 					  dataType : "json",
 					  success : function(data, textStatus, jqXHR) {
 						  if (data.success) {
-							  alert("success")
+							  //console.log(data);
+							  resolve(data);
 						  } else {
 							  reject("Failed to create incident.");	
 						  }
@@ -1327,8 +1493,8 @@ $(function () {
 				  });
 			  });
 			  return promise;
-			} // end $.backend.social_managment.create
-		} // end $.backend.social_managment
+			} // end $.backend.social_media.publish
+		} // end $.backend.social_media
 	} // end $.backend
 	
 	$(document).ready(function(e) {
