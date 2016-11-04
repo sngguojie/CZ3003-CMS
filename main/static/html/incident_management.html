@@ -41,26 +41,6 @@
                         </tr>
                     </thead>
                     <tbody>
-                    	<!--
-                        <tr style="cursor : pointer ;">
-                            <td>12</td>
-                            <td>1</td>
-                            <td>8</td>
-                            <td>0</td>
-                            <td>
-                                <span class="label label-success">ACTIVE</span>
-                            </td>
-                        </tr>
-                        <tr style="cursor : pointer ;">
-                            <td>12</td>
-                            <td>1</td>
-                            <td>8</td>
-                            <td>0</td>
-                            <td>
-                            <span class="label label-success">ACTIVE</span>
-                            </td>
-                        </tr>
-                        -->
                     </tbody>
                 </table>
             </div> <!-- end incident table -->
@@ -171,7 +151,7 @@
                         
                         <div class="panel panel-info">
                         	<div class="panel-footer clearfix text-right">
-                            	<button type="submit" class="btn btn-success"><i class="fa fa-save"></i> Submit</button>
+                            	<button type="submit" class="btn btn-success"><i class="fa fa-save fa-lg" aria-hidden="true"></i> Submit</button>
                         	</div>
                         </div>
                     
@@ -193,12 +173,12 @@
                     </ul><!-- /list-group -->
                     
                     <div class="panel-footer clearfix">
-                        <form class="form text-right" id="log-create-form" onSubmit="$.page.social_media.logs.create(this, event)">
+                        <form class="form text-right" id="log-create-form" onSubmit="$.page.incident.logs.create(this, event)">
                             <div class="form-group">
                                 <textarea id="log-create-description" class="form-control" rows="3" style="resize:none;" placeholder="" required></textarea>
                             </div>
                             <button class="btn btn-success" type="submit">
-                                <i class="fa fa-comment fa-lg"></i>
+                                <i class="fa fa-comment fa-lg" aria-hidden="true"></i>
                                 <span>Add New Log</span>
                             </button>
                         </form>
