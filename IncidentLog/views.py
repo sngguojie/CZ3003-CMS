@@ -74,3 +74,27 @@ def create(request, incident_id):
 	except commonHttp.HttpBadRequestException as e:
 		return HttpResponseBadRequest(e.reason_phrase)
 
+@require_GET
+@csrf_exempt
+def list(request):
+	all_incident_logs = IncidentLog.objects.all()
+
+	json_results = []
+
+	for incident_logs in all_incident_logs:
+		agency_json = {
+			"id" : incident_logs.id,
+			expectedAttr["INCIDENT_ID"] : incident_logs.incident_id,
+			expectedAttr["DESCRIPTION"] : incident_logs.description,
+			expectedAttr["DATETIME"] : incident_logs.datetime,
+		}
+
+		json_results.append(agency_json)
+
+	response = JsonResponse({
+		"results" : json_results,
+		"success" : True,
+		})
+
+	return response
+
