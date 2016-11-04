@@ -48,22 +48,31 @@ $(function () {
 						},
 						color : "#006DF0",
 						stroke : "#666666"
+					},
+					Others : {
+						icon : function() {
+							return {
+								url : "../images/others.svg",
+								origin : new google.maps.Point(0, 0),
+								anchor : new google.maps.Point(12, 12)
+							}
+						},
+						color : "#DDDDDD",
+						stroke : "#666666"
 					}
 				},
 				/**
 				*	Adds a marker with radius(meters) on Basemap
 				*/
 				add : function(lat, lng, radius, title, type) {
-					var marker = {
-						marker : new google.maps.Marker({
-							position : {lat:lat, lng:lng},
-							map : $.google.maps.map,
-							animation: google.maps.Animation.DROP,
-							title : title,
-							icon : $.google.maps.marker.icons[type].icon()
-						})
-					};
-					
+					var marker = new google.maps.Marker({
+						position : {lat:lat, lng:lng},
+						map : $.google.maps.map,
+						animation: google.maps.Animation.DROP,
+						title : title,
+						icon : $.google.maps.marker.icons[type].icon()
+					});
+				
 					if (radius > 0) {
 						marker.circle = new google.maps.Circle({
 							strokeColor: $.google.maps.marker.icons[type].stroke,
@@ -77,11 +86,28 @@ $(function () {
 						});
 					}
 					
+					var contentString = '<div id="content">'+
+					'<div id="siteNotice">'+
+					'</div>'+
+					'<div id="bodyContent">'+
+					'<p><b>'+title+'</b></p>'+
+					'</div>'+
+					'</div>';
+					
+					var infowindow = new google.maps.InfoWindow({
+						content: contentString
+					});
+					
+					marker.addListener('click', function() {
+						infowindow.open(map, marker);
+					});
+          
+        
 					$.google.maps.markers.push(marker);
 				}, // end $.google.maps.marker.add
 				clear_all : function() {
 					$.google.maps.markers.forEach(function(marker, index) {
-						marker.marker.setMap(null);
+						marker.setMap(null);
 						if(marker.circle !== undefined) {
 							marker.circle.setMap(null);	
 						}
@@ -89,36 +115,39 @@ $(function () {
 					$.google.maps.markers = [];
 				} // end $.google.maps.marker.clear_all
 			}, // end $.google.maps.marker
-			geocode_address : function(address, callback) {
-				$.google.maps.geocoder.geocode({
-					address : address + ", Singapore",
-					region : "SG"
-				}, function(results, status) {
-					if (status == 'OK') {
-						//console.log('Geocoded Result: ', results[0].geometry.location);
-						if (callback !== undefined) {
-							callback.call(this, results);	
+			geocode_address : function(address) {
+				var promise = new Promise(function(resolve, reject) {
+					$.google.maps.geocoder.geocode({
+						address : address + ", Singapore",
+						region : "SG"
+					}, function(results, status) {
+						if (status == 'OK') {
+							//console.log('Geocoded Result: ', results[0].geometry.location);
+							resolve(results);
+						} else {
+							console.log('Geocode was not successful for the following reason: ^', status);
+							reject(status);
 						}
-					} else {
-						console.log('Geocode was not successful for the following reason: ^', status);
-					}
+					});
 				});
+				return promise;
 			}, // end $.google.maps.geocode_address
-			geocode_latlng : function(location, callback) {
-				$.google.maps.geocoder.geocode({
-					location : location,
-					region : "SG"
-				}, function(results, status) {
-					if (status == 'OK') {
-						console.log('Geocoded Result: ', results);
-						if (callback !== undefined) {
-							
-							callback.call(this, results);	
+			geocode_latlng : function(location) {
+				var promise = new Promise(function(resolve, reject) {
+					$.google.maps.geocoder.geocode({
+						location : location,
+						region : "SG"
+					}, function(results, status) {
+						if (status == 'OK') {
+							//console.log('Geocoded Result: ', results);
+							resolve(results);
+						} else {
+							console.log('Geocode was not successful for the following reason: ^', status);
+							reject(status);
 						}
-					} else {
-						console.log('Geocode was not successful for the following reason: ^', status);
-					}
+					});
 				});
+				return promise;
 			} // end $.google.maps.geocode_latlng
 		}, // end $.google.maps
 		firebase : {
@@ -245,7 +274,7 @@ $(function () {
 					
 					var incident = payload.data.incident;
 					if(incident !== undefined && incident) {
-						$.page.incident.update();
+						$.page.update();
 					}
 				});
 			}, // end $.google.firebase.receive_message
@@ -274,18 +303,25 @@ $(function () {
 				
 				data = JSON.stringify(data);
 				
-				$.ajax({
-					url : "https://fcm.googleapis.com/fcm/send",
-					method : "POST",
-					headers : {
-						"Content-Type" : "application/json",
-						"Authorization" : "key=" + $.google.firebase.config.serverKey
-					},
-					data : data,
-					success: function(data, textStatus, jqXHR) {
-						console.log("broadcast sent.. ", data);
-					}
+				var promise = new Promise(function(resolve, reject) {
+					$.ajax({
+						url : "https://fcm.googleapis.com/fcm/send",
+						method : "POST",
+						headers : {
+							"Content-Type" : "application/json",
+							"Authorization" : "key=" + $.google.firebase.config.serverKey
+						},
+						data : data,
+						success: function(data, textStatus, jqXHR) {
+							console.log("broadcast sent.. ", data);
+							resolve(data);
+						},
+						error : function(jqXHR, textStatus, errorThrown) {
+							reject(jqXHR);
+						}
+					});
 				});
+				return promise;
 			} // end $.google.firebase.send_broadcast
 		} // end $.google.firebase
 	}
@@ -345,7 +381,7 @@ $(function () {
 			window.location = "login.html";
 		}, // end $.page.logout
 		update : function() {
-			$.backend.incident.list(function(results) {
+			$.backend.incident.list().then(function(results) {
 				$.page.incident.list = results;
 				$.page.incident.update(results);
 				$.page.social_media.update(results);
@@ -369,9 +405,7 @@ $(function () {
 						
 						$("#incident_create_form").submit($.page.incident.submit_create_form);
 					}
-				})/*.done(function() {
-					$.page.incident.logs.refresh_list();
-				})*/;
+				});
 				
 				//load menus
 				$.page.incident.menu.init($.page.incident.menu.click);
@@ -381,39 +415,56 @@ $(function () {
 							
 				var address = $("#incident-location").val();
 				var incident_type = $("#incident-type").val();
-				$.google.maps.geocode_address(address, function(results) {
-					var location = results[0].geometry.location
+				$.google.maps.geocode_address(address).then(function(results) {
+					var new_location = results[0].geometry.location;
 					
-					//TODO search for existing incidents
-					var incident_exists = true;
+					var incident_exists = false;
+					var incident_id, description;
 					$.page.incident.list.some(function(incident, index) {
 						if (incident.location != null) {
-							var incident_location = new google.maps.LatLng(incident.location.coord_lat, incident.location.coord_long)
+							var existing_location = new google.maps.LatLng(incident.location.coord_lat, incident.location.coord_long)
 							
-							var dist = google.maps.geometry.spherical.computeDistanceBetween(location, incident_location);
+							var dist = google.maps.geometry.spherical.computeDistanceBetween(new_location, existing_location);
 							var radius = incident.location.radius;
 							
-							console.log(index, incident);
-							incident_exists = dist <= radius;
+							incident_exists = dist <= radius && incident_type === incident.incident_type;
+							if (incident_exists) {
+								incident_id = incident.id;
+								address = incident.description;
+							}
 							return incident_exists;
 						}
 					});
-					console.log(incident_exists);
-					return;
-					if (!incident_exists) {
-						$.google.maps.geocode_latlng(location, function(results) {
-							var address = results[0].formatted_address;
-							
-							// deactivation_time, activation_time, description, incident_type, radius, coord_lat, coord_long, successCallback
-							var coord_lat = location.lat();
-							var coord_lng = location.lng();
-							var activation_time = new Date();
-							$.backend.incident.create(null, activation_time, address, incident_type, 2000, coord_lat, coord_lng, function(id) {
-								console.log("created new incident with id : ^", id);
-								$.google.firebase.send_broadcast({incident:true});
-							});
-						});
+					
+					return { incident_id : incident_id, location : new_location };
+				}).then(function(result) {
+					var location = result.location;
+					
+					if (result.incident_id === undefined) {
+						return $.google.maps.geocode_latlng(location);
 					}
+					
+					return result;
+				}).then(function(results) {
+					if (results.incident_id === undefined) {
+						address = results[0].formatted_address;
+						var location = results[0].geometry.location;
+						var lat = location.lat();
+						var lng = location.lng();
+						var activation_time = new Date();
+						
+						return $.backend.incident.create(null, activation_time, address, incident_type, 2000, lat, lng);
+					}
+					return results.incident_id;
+				}).then(function(result) {
+					console.log("incident id : ", result);
+					var description = $.page.incident.get_type_text(incident_type) + " @ " + address;
+					return $.page.incident.call_report.create(result, description);
+				}).then(function(result) {
+					console.log("created new call report with id : ", result.id);
+					$.google.firebase.send_broadcast({incident:true});
+					// reset form
+					$("#incident_create_form")[0].reset();
 				});
 			}, //end $.page.incident.submit_create_form
 			menu : {
@@ -455,7 +506,7 @@ $(function () {
 					}).text("Incident Management").appendTo(a);
 					
 					a.click(onClick);
-				}, //end $.page.incident.menu.shortcut
+				}, // end $.page.incident.menu.shortcut
 				click : function(e) {
 					e.preventDefault();
 					
@@ -465,10 +516,16 @@ $(function () {
 						$.page.scrollTo("#incident_view");
 					});
 				}
-			}, //end $.page.incident.menu
+			}, // end $.page.incident.menu
+			type : {
+				F : "Flooding",
+				T : "Terrorist",
+				O : "Others"
+			}, // end $.page.incident.type
 			get_type_text : function(incident_type) {
-				return $("#incident-type option[value=" + incident_type + "]").text();
-			}, //end $.page.incident.get_type_text
+				return $.page.incident.type[incident_type];
+				//return $("#incident-type option[value=" + incident_type + "]").text();
+			}, // end $.page.incident.get_type_text
 			update : function(results) {
 				$.google.maps.marker.clear_all();
 				
@@ -535,6 +592,23 @@ $(function () {
 					$("<td>").text(type).appendTo(tr);
 					
 					var status = $("<span>");
+					
+					status.click(function() {
+						var dialog = confirm("Confirm close this incident?");
+						if (dialog == true) {
+							var incident_id = tr.attr("data-id");
+							
+							tr.remove();
+							
+							var deactivation_time = new Date();
+							$.backend.incident.update(incident_id, { deactivation_time : deactivation_time })
+							.then(function(result) {
+								$.backend.incident_logs.create(incident_id, "Incident Deactivated (" + deactivation_time + ")");
+								$.google.firebase.send_broadcast({incident:true});
+							});
+						}
+					});
+					
 					$("<td>").append(status).appendTo(tr);
 					
 					if (result.deactivation_time === null) {
@@ -554,8 +628,7 @@ $(function () {
 				refresh_list : function() {
 					var incident_id = $("#incident-log-list").attr("data-incident-id");
 					if (incident_id === undefined) return;
-					$.backend.incident_logs.list(incident_id, function(results){
-						//alert(JSON.stringify(results));
+					$.backend.incident_logs.list(incident_id).then(function(results) {
 						$("#incident-log-list").empty();
 						for(var i = 0; i < results.length; i++) {
 							var id = results[i].id;
@@ -570,7 +643,7 @@ $(function () {
 				new_list_item : function(id, description, datetimeString) {
 					var li = $("<li>", {
 						class : "list-group-item clearfix log-item",
-						id : id
+						"data-id" : id
 					});
 					
 					var icon_wrapper = $("<div>", {
@@ -609,12 +682,19 @@ $(function () {
 					var description = $("#log-create-description").val();
 					if (description.length <= 0) return;
 					
-					$.backend.incident_logs.create(incident_id, description, function(data) {
+					$.backend.incident_logs.create(incident_id, description).then(function(data) {
 						$.page.incident.logs.refresh_list();
 						$("#log-create-description").val("");
 					});
 				}  // end $.page.incident.logs.create
-			}  // end $.page.incident.logs
+			}, // end $.page.incident.logs
+			call_report : {
+				create : function(incident_id, description) {
+					var name = $("#incident_caller_name").val();
+					var contact = $("#incident_caller_contact").val();
+					return $.backend.call_report.create(incident_id, name, contact, description);
+				}	// end $.page.incident.call_report.create
+			} // end $.page.incident.call_report
 		},  // end $.page.incident
 		resource : {
 			init : function(showView) {
@@ -714,34 +794,129 @@ $(function () {
 				timeline.empty();
 				
 				results.forEach(function(result, index) {
-					
-					var entry = $("<div>", {
-						class : "entry",
-						"data-id" : result.id
-					}).appendTo(timeline);
-					
-					var date, time;
-					var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-					if (result.activation_time != null) {
-						var datetime = new Date(result.activation_time);
-						date = datetime.getDate() + " " + monthNames[datetime.getMonth()] + " " + datetime.getFullYear();
-						time = datetime.getHours() + ":" + datetime.getMinutes() + ":" + datetime.getSeconds();
-						time = datetime.toTimeString().substr(0, 8);
-						//date = datetime.toUTCString();
-					}
-					
-					var type = $.page.incident.get_type_text(result.incident_type);
-					
-					$("<small>").text(date).appendTo(entry);
-					$("<h1>").text(time).appendTo(entry);
-					$("<h2>").text(type).appendTo(entry);
-					$("<div>", {
-						style : "overflow:hidden"
-					}).text(result.description).appendTo(entry);
-					
-					timeline.scrollLeft(timeline.width());
+					var incident_id = result.id;
+					var activation_time = result.activation_time;
+					var deactivation_time = result.deactivation_time;
+					var incident_type = $.page.incident.get_type_text(result.incident_type);
+					var description = result.description;
+					$.page.social_media.timeline.incidents.add_entry(incident_id, activation_time, deactivation_time, incident_type, description);
 				});
+				
+				timeline.children(".entry:last").click();
 			}, // end $.page.social_media.update
+			timeline : {
+				incidents : {
+					add_entry : function(incident_id, activation_time, deactivation_time, incident_type, description) {
+						var timeline = $("#media_view .timeline_main");
+					
+						var entry = $("<div>", {
+							class : "entry",
+							"data-id" : incident_id
+						}).appendTo(timeline);
+						
+						entry.click($.page.social_media.timeline.incidents.entry_onClick);
+						
+						var datetime = new Date();
+						if (deactivation_time === null || deactivation_time === undefined) {
+							if (activation_time != null) {
+								datetime = new Date(activation_time);
+							}
+							entry.addClass("active");
+							
+							$("<span>", {
+								class : "label label-success"	
+							}).text("ACTIVE").appendTo(entry);
+						} else {
+							if (deactivation_time != null) {
+								datetime = new Date(deactivation_time);
+							}
+							
+							$("<span>", {
+								class : "label label-error"	
+							}).text("CLOSED").appendTo(entry);
+						}
+						
+						var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+						var date = datetime.getDate() + " " + monthNames[datetime.getMonth()] + " " + datetime.getFullYear();
+						var time = datetime.getHours() + ":" + datetime.getMinutes() + ":" + datetime.getSeconds();
+						time = datetime.toTimeString().substr(0, 8);
+						
+						$("<br>").appendTo(entry);
+						$("<small>").text(date).appendTo(entry);
+						$("<h1>").text(time).appendTo(entry);
+						$("<h2>").text(incident_type).appendTo(entry);
+						$("<div>", {
+							style : "overflow:hidden"
+						}).text(description).appendTo(entry);
+					}, // end $.page.social_media.timeline.incidents.add_entry
+					entry_onClick : function(e) {
+						var incident_id = $(this).attr("data-id");
+						var log_timeline = $("#media_view .timeline");
+						log_timeline.attr("data-incident-id", incident_id);
+						$.page.social_media.timeline.logs.update();
+					} // end $.page.social_media.timeline.incidents.entry_onClick
+				}, // end $.page.social_media.timeline.incidents
+				logs : {
+					inverted : false,
+					update : function() {
+						var incident_id = $("#media_view .timeline").attr("data-incident-id");
+						if (incident_id === undefined) return;
+						
+						$.page.social_media.timeline.logs.inverted = false;
+						$.backend.incident_logs.list(incident_id).then(function(results) {
+							$("#media_view .timeline").empty();
+							for(var i = 0; i < results.length; i++) {
+								var id = results[i].id;
+								var description = results[i].description;
+								var datetimeString = results[i].datetime;
+								
+								$.page.social_media.timeline.logs.add_entry(id, description, datetimeString);
+							}
+						});
+					}, // end $.page.social_media.timeline.logs.update
+					add_entry : function(id, description, datetimeString) {
+						var timeline = $("#media_view .timeline");
+						
+						var entry = $("<li>").prependTo(timeline);
+						if ($.page.social_media.timeline.logs.inverted) {
+							entry.addClass("timeline-inverted");
+						}
+						$.page.social_media.timeline.logs.inverted = !$.page.social_media.timeline.logs.inverted;
+						
+						var badge = $("<div>", {
+							class : "timeline-badge"	
+						}).appendTo(entry);
+						
+						var icon = $("<i>", {
+							class : "fa fa-comment"
+						}).appendTo(badge);
+						
+						var panel = $("<div>", {
+							class : "timeline-panel"
+						}).appendTo(entry);
+						
+						var timeline_heading = $("<div>", {
+							class : "timeline-heading"
+						}).appendTo(panel);
+						
+						var heading_wrapper = $("<p>").appendTo(timeline_heading);
+						var small_text = $("<small>", {
+							class : "text-muted"
+						}).appendTo(heading_wrapper);
+						$("<i>", {
+							class : "fa fa-clock-o"
+						}).appendTo(small_text);
+						
+						small_text.append($.page.convert_time_display(datetimeString));
+						
+						var timeline_body = $("<div>", {
+							class : "timeline-body"
+						}).appendTo(panel);
+						
+						$("<p>").text(description).appendTo(timeline_body);
+					} // end $.page.social_media.timeline.logs.add_entry
+				} // end $.page.social_media.timeline.logs
+			}, // end $.page.social_media.timeline
 			menu : {
 				init : function(onClick) {
 					$.page.social_media.menu.main_menu(onClick);
@@ -844,19 +1019,27 @@ $(function () {
 			return "/";
 		},
 		incident_logs : {
-			list : function(incident_id, successCallback) {
-				$.ajax({
-					url : $.backend.get_root_url() + "Incident/" + incident_id + "/logs/list/",
-					method : "GET",
-					dataType : "json",
-					success : function(data, textStatus, jqXHR) {
-						if(successCallback !== undefined) {
-							successCallback.call(this, data.results);	
+			list : function(incident_id) {
+				var promise = new Promise(function(resolve, reject) {
+					$.ajax({
+						url : $.backend.get_root_url() + "Incident/" + incident_id + "/logs/list/",
+						method : "GET",
+						dataType : "json",
+						success : function(data, textStatus, jqXHR) {
+							if(data.success) {
+								resolve(data.results);
+							} else {
+								reject("Failed to retrieve logs for {" + incident_id + "}.");	
+							}
+						},
+						error : function(jqXHR, textStatus, errorThrown) {
+							reject(jqXHR.responseText);
 						}
-					}
+					});
 				});
+				return promise;
 			}, // end $.backend.incident_logs.list
-			create : function(incident_id, description, successCallback) {
+			create : function(incident_id, description) {
 				var data = {
 					"description" : description
 				};
@@ -864,33 +1047,49 @@ $(function () {
 				// stringify json for backend to recognise
 				data = JSON.stringify(data);
 				
-				$.ajax({
-					url : $.backend.get_root_url() + "Incident/" + incident_id + "/logs/create/",
-					method : "POST",
-					data : data,
-					dataType : "json",
-					success : function(data, textStatus, jqXHR) {
-						if(successCallback !== undefined) {
-							successCallback.call(this, data);	
+				var promise = new Promise(function(resolve, reject) {
+					$.ajax({
+						url : $.backend.get_root_url() + "Incident/" + incident_id + "/logs/create/",
+						method : "POST",
+						data : data,
+						dataType : "json",
+						success : function(data, textStatus, jqXHR) {
+							if(data.success) {
+								resolve(data);
+							} else {
+								reject("Failed to create logs for {" + incident_id + "}.");	
+							}
+						},
+						error : function(jqXHR, textStatus, errorThrown) {
+							reject(jqXHR.responseText);
 						}
-					}
+					});
 				});
+				return promise;
 			} // end $.backend.incident_logs.create
 		}, // end $.backend.incident_logs
 		incident : {
-			list : function(successCallback) {
-				$.ajax({
-					url : $.backend.get_root_url() + "Incident/list/",
-					method : "GET",
-					dataType : "json",
-					success : function(data, textStatus, jqXHR) {
-						if(successCallback !== undefined) {
-							successCallback.call(this, data.results);	
+			list : function() {
+				var promise = new Promise(function(resolve, reject) {
+					$.ajax({
+						url : $.backend.get_root_url() + "Incident/list/",
+						method : "GET",
+						dataType : "json",
+						success : function(data, textStatus, jqXHR) {
+							if (data.success) {
+								resolve(data.results);	
+							} else {
+								reject("Failed to list incidents.");	
+							}
+						},
+						error : function(jqXHR, textStatus, errorThrown) {
+							reject(jqXHR.responseText);
 						}
-					}
+					});
 				});
+				return promise;
 			}, // end $.backend.incident.list
-			create : function(deactivation_time, activation_time, description, incident_type, radius, coord_lat, coord_long, successCallback) {
+			create : function(deactivation_time, activation_time, description, incident_type, radius, coord_lat, coord_long) {
 				var data = {
 					"deactivation_time" : deactivation_time,
 					"activation_time" : activation_time,
@@ -906,80 +1105,120 @@ $(function () {
 				// stringify json for backend to recognise
 				data = JSON.stringify(data);
 				
-				$.ajax({
-					url : $.backend.get_root_url() + "Incident/create/",
-					method : "POST",
-					data : data,
-					dataType : "json",
-					success : function(data, textStatus, jqXHR) {
-						if(successCallback !== undefined) {
-							successCallback.call(this, data.id);	
+				var promise = new Promise(function(resolve, reject) {
+					$.ajax({
+						url : $.backend.get_root_url() + "Incident/create/",
+						method : "POST",
+						data : data,
+						dataType : "json",
+						success : function(data, textStatus, jqXHR) {
+							if (data.success) {
+								resolve(data.id);
+								
+								// log new incident creation
+								$.backend.incident_logs.create(data.id, "Incident Activation (" + activation_time + ")");
+							} else {
+								reject("Failed to create incident.");	
+							}
+						},
+						error : function(jqXHR, textStatus, errorThrown) {
+							reject(jqXHR.responseText);
 						}
-					}
+					});
 				});
+				return promise;
 			}, // end $.backend.incident.create
-			update : function(incident_id, radius, successCallback) {
+			update : function(incident_id, data) {
+				/*
 				var data = {
 					"location" : {
 						"radius" : radius
 					}
 				};
+				*/
 				
 				// stringify json for backend to recognise
 				data = JSON.stringify(data);
 				
-				$.ajax({
-					url : $.backend.get_root_url() + "Incident/update/" + incident_id + "/",
-					method : "POST",
-					data : data,
-					dataType : "json",
-					success : function(data, textStatus, jqXHR) {
-						if(successCallback !== undefined) {
-							successCallback.call(this, data);	
+				var promise = new Promise(function(resolve, reject) {
+					$.ajax({
+						url : $.backend.get_root_url() + "Incident/update/" + incident_id + "/",
+						method : "POST",
+						data : data,
+						dataType : "json",
+						success : function(data, textStatus, jqXHR) {
+							if (data.success) {
+								resolve(data);
+							} else {
+								reject("Failed to update incident for {" + incident_id + "}.");	
+							}
+						},
+						error : function(jqXHR, textStatus, errorThrown) {
+							reject(jqXHR.responseText);
 						}
-					}
+					});
 				});
+				return promise;
 			}, // end $.backend.incident.update
 		}, // end $.backend.incident
 		call_report : {
-			create : function(incident_id, details, successCallback) {
+			create : function(incident_id, name, contact, description) {
 				var data = {
-					"incident_id" : incident_id,
-					"details" : details
-				};
-				
+					caller_name : name,
+					contact_no : contact,
+					description : description,
+					dateTime : new Date()
+				}
+				//[TODO]
 				// stringify json for backend to recognise
 				data = JSON.stringify(data);
 				
-				$.ajax({
-					url : $.backend.get_root_url(),
-					method : "POST",
-					data : data,
-					dataType : "json",
-					success : function(data, textStatus, jqXHR) {
-						if(successCallback !== undefined) {
-							successCallback.call(this, data);	
+				var promise = new Promise(function(resolve, reject) {
+					$.ajax({
+						url : $.backend.get_root_url() + "Incident/" + incident_id + "/callreports/create/",
+						method : "POST",
+						data : data,
+						dataType : "json",
+						success : function(data, textStatus, jqXHR) {
+							if (data.success) {
+								resolve(data);
+								
+								var log_desc = "Call report made by " + name + " (contact no.: " + contact + ")";
+								$.backend.incident_logs.create(incident_id, log_desc);
+							} else {
+								reject("Failed to create call report for {" + incident_id + "}.");	
+							}
+						},
+						error : function(jqXHR, textStatus, errorThrown) {
+							reject(jqXHR.responseText);
 						}
-					}
+					});
 				});
+				return promise;
 			}, // end $.backend.call_report.create
 		}, // end $.backend.call_report
 		CMS_Status : {
-			retrieve : function(successCallback) {
-				$.ajax({
-					url : $.backend.get_root_url() + "CMSStatus/read/1/",
-					method : "GET",
-					dataType : "json",
-					success : function(data, textStatus, jqXHR) {
-						if(successCallback !== undefined) {
+			retrieve : function() {
+				var promise = new Promise(function(resolve, reject) {
+					$.ajax({
+						url : $.backend.get_root_url() + "CMSStatus/read/1/",
+						method : "GET",
+						dataType : "json",
+						success : function(data, textStatus, jqXHR) {
 							if (data.success) {
-								successCallback.call(this, data.active);
+								resolve(data.active);
+							} else {
+								reject("Failed to retrieve CMS Status.");	
 							}
+						},
+						error : function(jqXHR, textStatus, errorThrown) {
+							reject(jqXHR.responseText);
 						}
-					}
+					});
 				});
+				return promise;
 			}, // end $.backend.CMS_Status.retrieve
-			update : function(active, successCallback) {
+			update : function(active) {
 				var data = {
 					"active" : active
 				};
@@ -987,33 +1226,49 @@ $(function () {
 				// stringify json for backend to recognise
 				data = JSON.stringify(data);
 				
-				$.ajax({
-					url : $.backend.get_root_url() + "CMSStatus/update/1/",
-					method : "POST",
-					data : data,
-					dataType : "json",
-					success : function(data, textStatus, jqXHR) {
-						if(successCallback !== undefined) {
-							successCallback.call(this, data);	
+				var promise = new Promise(function(resolve, reject) {
+					$.ajax({
+						url : $.backend.get_root_url() + "CMSStatus/update/1/",
+						method : "POST",
+						data : data,
+						dataType : "json",
+						success : function(data, textStatus, jqXHR) {
+							if (data.success) {
+								resolve(data);	
+							} else {
+								reject("Failed to update CMS Status.");	
+							}
+						},
+						error : function(jqXHR, textStatus, errorThrown) {
+							reject(jqXHR.responseText);
 						}
-					}
+					});
 				});
+				return promise;
 			}, // end $.backend.CMS_Status.update
 		}, // end $.backend.CMS_Status
 		resource : {
-			list : function(successCallback) {
-				$.ajax({
-					url : $.backend.get_root_url(),
-					method : "GET",
-					dataType : "json",
-					success : function(data, textStatus, jqXHR) {
-						if(successCallback !== undefined) {
-							successCallback.call(this, data);	
+			list : function() {
+				var promise = new Promise(function(resolve, reject) {
+					$.ajax({
+						url : $.backend.get_root_url(),
+						method : "GET",
+						dataType : "json",
+						success : function(data, textStatus, jqXHR) {
+							if (data.success) {
+								resolve(data);	
+							} else {
+								reject("Failed to retrieve resources.");	
+							}
+						},
+						error : function(jqXHR, textStatus, errorThrown) {
+							reject(jqXHR.responseText);
 						}
-					}
+					});
 				});
+				return promise;
 			}, // end $.backend.resource.list
-			assign : function(to, title, message, successCallback) {
+			assign : function(to, title, message) {
 				var data = {
 					"to" : to,
 					"title" : title,
@@ -1023,19 +1278,57 @@ $(function () {
 				// stringify json for backend to recognise
 				data = JSON.stringify(data);
 				
-				$.ajax({
-					url : $.backend.get_root_url() + "SMS/create/",
-					method : "POST",
-					data : data,
-					dataType : "json",
-					success : function(data, textStatus, jqXHR) {
-						if(successCallback !== undefined) {
-							successCallback.call(this, data);	
+				var promise = new Promise(function(resolve, reject) {
+					$.ajax({
+						url : $.backend.get_root_url() + "SMS/create/",
+						method : "POST",
+						data : data,
+						dataType : "json",
+						success : function(data, textStatus, jqXHR) {
+							if (data.success) {
+								resolve(data);	
+							} else {
+								reject("Failed to send SMS.");	
+							}
+						},
+						error : function(jqXHR, textStatus, errorThrown) {
+							reject(jqXHR.responseText);
 						}
-					}
+					});
 				});
+				return promise;
 			}, // end $.backend.resource.assign
-		} // end $.backend.resource
+		}, // end $.backend.resource
+		social_managment : {
+		  create : function(status_string) {
+			  var data = {
+				  "status" : $("#social_media_content").val()
+			  };
+			  
+			  // stringify json for backend to recognise
+			  data = JSON.stringify(data);
+			  
+			  var promise = new Promise(function(resolve, reject) {
+				  $.ajax({
+					  url : $.backend.get_root_url() + "CMSSocial/update/",
+					  method : "POST",
+					  data : data,
+					  dataType : "json",
+					  success : function(data, textStatus, jqXHR) {
+						  if (data.success) {
+							  alert("success")
+						  } else {
+							  reject("Failed to create incident.");	
+						  }
+					  },
+					  error : function(jqXHR, textStatus, errorThrown) {
+						  reject(jqXHR.responseText);
+					  }
+				  });
+			  });
+			  return promise;
+			} // end $.backend.social_managment.create
+		} // end $.backend.social_managment
 	} // end $.backend
 	
 	$(document).ready(function(e) {
