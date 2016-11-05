@@ -5,7 +5,7 @@ import logging
 sched = BlockingScheduler()
 logging.basicConfig()
 
-@sched.scheduled_job('interval', minutes=1)
+@sched.scheduled_job('interval', minutes=5)
 def timed_job():
     url = "https://crisismanagement.herokuapp.com/emailApp/create/"
     r=requests.post(url,json={"start": "start"})
