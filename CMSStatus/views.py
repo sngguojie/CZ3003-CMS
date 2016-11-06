@@ -8,6 +8,7 @@ from models import CMSStatus
 from common import util, commonHttp, datetime_util
 import logging
 import json
+import requests
 
 
 expectedAttr = {
