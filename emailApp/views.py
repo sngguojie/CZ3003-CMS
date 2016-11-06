@@ -8,6 +8,7 @@ from django.core.mail import EmailMessage
 from datetime import datetime, timedelta
 from IncidentLog.models import IncidentLog
 from Incident.models import Incident
+from IncidentSummary.models import IncidentSummary
 
 from common import util, commonHttp, datetime_util
 import logging
@@ -46,12 +47,17 @@ def create(request):
 	 			contentStr= contentStr + 'Description: ' + incident_logs.description + '\nDateTime: ' + str(incident_logs.datetime) +'\n'
 
 		time_difference=datetime_util.sgt_now() - cms.last_sent
-	 	if time_difference > timedelta(minutes=30):
+		
+	 	if time_difference > timedelta(minutes=30) and cms.active:
 	 		email=EmailMessage('Incident Report Generated ' + str(datetime_util.sgt_now()), contentStr, to=['jqlee93@gmail.com'])
 			email.send()
 			cms.last_sent=datetime_util.sgt_now()
 			commonHttp.save_model_obj(cms)
-
+			new_ism = IncidentSummary(
+				description=contentStr,
+				datetime=datetime_util.sgt_now()
+				)
+			commonHttp.save_model_obj(new_ism)
 
 		response = JsonResponse({
 		 	cmsexpectedAttr["ACTIVE"] : cms.active,
