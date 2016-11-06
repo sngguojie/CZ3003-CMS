@@ -53,7 +53,7 @@ def update(request, obj_id):
 		commonHttp.check_keys(json_obj, req_attrs)
 
 		cms.active = json_obj.get(expectedAttr["ACTIVE"])
-		if json_obj.get(expectedAttr["ACTIVE"]):
+		if cms.active=="true":
 			url = "https://crisismanagement.herokuapp.com/emailApp/create_for_first_time_active/"
 			r=requests.post(url,json={"start": "start"})
 			
