@@ -53,8 +53,9 @@ def update(request, obj_id):
 
 		cms.active = json_obj.get(expectedAttr["ACTIVE"])
 		if cms.active:
-			# TODO: Add Send Email Function Here
-			cms.last_sent = datetime_util.sgt_now()
+			url = "https://crisismanagement.herokuapp.com/emailApp/create_for_first_time_active/"
+			r=requests.post(url,json={"start": "start"})
+			
 		
 		commonHttp.save_model_obj(cms)
 
