@@ -151,11 +151,6 @@ $(function () {
 					
 					$.google.maps.markers.push(marker);
 				}, // end $.google.maps.marker.add
-				mediaInfoWindow_click : function(id, e){
-					e.preventDefault();
-					//TODO:infowindow on click
-					alert("update the selected id to "+id+" here!")
-				}, // end $.google.maps.marker.mediaInfoWindow_click
 				clear_all : function() {
 					$.google.maps.markers.forEach(function(marker, index) {
 						marker.setMap(null);
@@ -311,9 +306,7 @@ $(function () {
 			config : {
 				apiKey: "AIzaSyAfx3vltb6DmiG9O72T1dni1KweHxVQbNc",
 				serverKey: "AIzaSyDGkaf5JEu3LZmc5_ObZP-7XGqzEhB0vTA",
-				//authDomain: "cz3003-cms.firebaseapp.com",
 				databaseURL: "https://cz3003-cms.firebaseio.com",
-				//storageBucket: "cz3003-cms.appspot.com",
 				messagingSenderId: "455786633696"
 			}, // end $.google.firebase.config
 			messaging : { /* Firebase Messaging Object */ },
@@ -343,7 +336,7 @@ $(function () {
 					$.google.firebase.token.registration_ids = [];
 					
 					snapshot.forEach(function(row) {
-						$.google.firebase.token.registration_ids[i] = row.val().registration_id;
+						$.google.firebase.token.registration_ids[i] = row.getKey();
 						i++;
 					});
 				});
@@ -394,8 +387,8 @@ $(function () {
 						if (!$.google.firebase.token.to_server.is_sent()) {
 							console.log('Sending token to server...');
 							
-							$.google.firebase.token.db_ref.push().set({
-								registration_id : currentToken,
+							var ref = $.google.firebase.database.ref("push_registrations/" + currentToken);
+							ref.set({
 								groups : $.page.get_cookie("groups"),
 								datetime : new Date().getTime()
 							}).then(function() {
@@ -408,12 +401,11 @@ $(function () {
 					}, // end $.google.firebase.token.to_server.send
 					is_sent : function(sent) {
 						if (sent === undefined) {
-							if (window.localStorage.getItem('sentToServer') == 1) {
-								  return true;
-							}
+							var cookie_val = Cookies.get("sentToServer");
+							return cookie_val === "true" ? true : false;
 							return false;
 						} else {
-							window.localStorage.setItem('sentToServer', sent ? 1 : 0);
+							Cookies.set("sentToServer", sent);
 							return sent;
 						}
 					} // end $.google.firebase.token.to_server.is_sent
@@ -696,7 +688,6 @@ $(function () {
 			}, // end $.page.incident.type
 			get_type_text : function(incident_type) {
 				return $.page.incident.type[incident_type];
-				//return $("#incident-type option[value=" + incident_type + "]").text();
 			}, // end $.page.incident.get_type_text
 			update : function(results) {
 				$.google.maps.marker.clear_all();
@@ -707,7 +698,6 @@ $(function () {
 				tbody.empty();
 				
 				results.forEach(function(result, index) {
-					//[TODO] remove deactivated incidents?
 					if (result.deactivation_time !== null) {
 						return;
 					}
@@ -1326,8 +1316,6 @@ $(function () {
 	} // end $.page
 	
 	$.backend = {
-		//root_url : "https://crisismanagement.herokuapp.com/",
-		//root_url : "/",
 		get_root_url : function() {
 			if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
 				return "https://crisismanagement.herokuapp.com/";	
@@ -1446,14 +1434,6 @@ $(function () {
 				return promise;
 			}, // end $.backend.incident.create
 			update : function(incident_id, data) {
-				/*
-				var data = {
-					"location" : {
-						"radius" : radius
-					}
-				};
-				*/
-				
 				// stringify json for backend to recognise
 				data = JSON.stringify(data);
 				
