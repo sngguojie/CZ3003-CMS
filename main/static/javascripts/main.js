@@ -506,16 +506,18 @@ $(function () {
 		init : function() {
 			var role = $.page.get_cookie("groups");
 			
+			var promises = [];
+			
 			if (role === "Call_Center") {
-				$.page.incident.init(true);
+				promises.push($.page.incident.init(true));
 				$("#theme-setting-icon, #theme-setting").remove();
 			} else if (role === "PR_Manager") {
-				$.page.social_media.init(true);
+				promises.push($.page.social_media.init(true));
 				$("#theme-setting-icon, #theme-setting").remove();
 			} else if (role === "HQ_Commander") {
-				$.page.incident.init(true);
-				$.page.resource.init();
-				$.page.social_media.init();
+				promises.push($.page.incident.init(true));
+				promises.push($.page.resource.init());
+				promises.push($.page.social_media.init());
 			} else {
 				// back to login
 				window.location = "login.html";
@@ -530,6 +532,8 @@ $(function () {
                 $.backend.CMS_Status.update(true);
 				$("#theme-setting-icon").click();
             });
+			
+			return Promise.all(promises);
 		}, // end $.page.init
 		get_cookie : function(c_name) {
 			return Cookies.get()[c_name];
@@ -558,25 +562,31 @@ $(function () {
 		incident : {
 			list : [ /* list of retrieved incidents */ ],
 			init : function(showView) {
-				//load view
-				$.ajax({
-					url : "incident_management.html",
-					success : function(data) {
-						var view = $("<div>", {
-							id : "incident_view",
-							class : "role_view"
-						}).appendTo("#main-container");
-						
-						view.html(data);
-						
-						if(!showView) view.hide();
-						
-						$("#incident_create_form").submit($.page.incident.submit_create_form);
-					}
-				});
-				
 				//load menus
 				$.page.incident.menu.init($.page.incident.menu.click);
+				
+				//load view
+				var promise = new Promise(function(resolve, reject) {
+					$.ajax({
+						url : "incident_management.html",
+						success : function(data) {
+							var view = $("<div>", {
+								id : "incident_view",
+								class : "role_view"
+							}).appendTo("#main-container");
+							
+							view.html(data);
+							
+							if(!showView) view.hide();
+							
+							$("#incident_create_form").submit($.page.incident.submit_create_form);
+							
+							resolve(data);
+						}
+					});
+				});
+				
+				return promise;
 			}, //end $.page.incident.init
 			submit_create_form : function(e) {
 				e.preventDefault();
@@ -639,7 +649,7 @@ $(function () {
 				init : function(onClick) {
 					$.page.incident.menu.main_menu(onClick);
 					$.page.incident.menu.shortcut(onClick);
-				},
+				}, // end $.page.incident.menu.init
 				main_menu : function(onClick) {
 					var li = $("<li>", {
 						class : "incident_btn",
@@ -881,33 +891,38 @@ $(function () {
 			}, // end $.page.resource.icons
 			inverted : false,
 			init : function(showView) {
-				//load view
-				$.ajax({
-					url : "resource_management.html",
-					success : function(data) {
-						var view = $("<div>", {
-							id : "resource_view",
-							class : "role_view"
-						}).appendTo("#main-container");
-						
-						view.html(data);
-						
-						if (!showView) view.hide();
-					}
-				}).done(function() {
-					$.page.resource.update.agencies();
-					
-					$("#resource-contact").on("focusin", function() {
-						$(this).prop("readonly", true);
-					});
-					
-					$("#resource-contact").on("focusout", function() {
-						$(this).prop("readonly", false);
-					});
-				});
-				
 				//load controls
 				$.page.resource.menu.init($.page.resource.menu.click);
+				
+				//load view
+				var promise = new Promise(function(resolve, reject) {
+					$.ajax({
+						url : "resource_management.html",
+						success : function(data) {
+							var view = $("<div>", {
+								id : "resource_view",
+								class : "role_view"
+							}).appendTo("#main-container");
+							
+							view.html(data);
+							resolve(data);
+							
+							if (!showView) view.hide();
+						}
+					}).done(function() {
+						$.page.resource.update.agencies();
+						
+						$("#resource-contact").on("focusin", function() {
+							$(this).prop("readonly", true);
+						});
+						
+						$("#resource-contact").on("focusout", function() {
+							$(this).prop("readonly", false);
+						});
+					});
+				});
+				return promise;
+				
 			}, // end $.page.resource.init
 			menu : {
 				init : function(onClick) {
@@ -1071,23 +1086,29 @@ $(function () {
 		}, // end $.page.resource
 		social_media : {
 			init : function(showView) {
-				//load view
-				$.ajax({
-					url : "media_management.html",
-					success : function(data) {
-						var view = $("<div>", {
-							id : "media_view",
-							class : "role_view"
-						}).appendTo("#main-container");
-						
-						view.html(data);
-						
-						if (!showView) view.hide();
-					}
-				});
-				
 				//load controls
 				$.page.social_media.menu.init($.page.social_media.menu.click);
+				
+				//load view
+				var promise = new Promise(function(resolve, reject) {
+					$.ajax({
+						url : "media_management.html",
+						success : function(data) {
+							var view = $("<div>", {
+								id : "media_view",
+								class : "role_view"
+							}).appendTo("#main-container");
+							
+							view.html(data);
+							
+							if (!showView) view.hide();
+							
+							resolve(data);
+						}
+					});
+				});
+				return promise;
+				
 			}, // end $.page.social_media.init
 			update : function(results) {
 				
@@ -1641,9 +1662,12 @@ $(function () {
 	} // end $.backend
 	
 	$(document).ready(function(e) {
-		$.page.init();
+		$.page.init().then(function() {
+			//console.log("test");
+			$.google.maps.load_library();
+			$.google.firebase.init();
+		});
 		
-        $.google.maps.load_library();
-		$.google.firebase.init();
+        
     });
 });
