@@ -228,10 +228,12 @@ $(function () {
 					
 					content_body.appendTo(content);
 					
+					console.log($("#resource-selector").children());
 					$("#resource-selector").children().each(function(index, element) {
 						var element_html = $(element).html();
 						//console.log(element_html);
 						content_body.append($(element_html));
+						
                     });
 					
 					return new google.maps.InfoWindow({
