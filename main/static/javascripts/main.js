@@ -1009,7 +1009,7 @@ $(function () {
 							$.page.resource.inverted = !$.page.resource.inverted;
 						});
 					});
-				},
+				}, // end $.page.resource.update.agencies
 				incidents : function(incidents) {
 					var select = $("#resource-incidents");
 					select.empty();
@@ -1641,8 +1641,9 @@ $(function () {
 	} // end $.backend
 	
 	$(document).ready(function(e) {
-        $.google.maps.load_library();
 		$.page.init();
+		
+        $.google.maps.load_library();
 		$.google.firebase.init();
     });
 });
